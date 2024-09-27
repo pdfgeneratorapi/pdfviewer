@@ -8,6 +8,7 @@ WORKDIR /pdf.js
 RUN git checkout develop
 RUN npm install
 RUN gulp generic
+RUN gulp minified
 
 # prepare build
 RUN echo -n "Merge pdf.js build and web into one."
@@ -20,7 +21,11 @@ RUN sed -i \
     -e 's+../build/+../dist/+g' \
     build/generic/web/viewer.html
 RUN sed -i \
-    -e 's+../build/+./+g' \
+    -e 's+../images/+../public/images/+g' \
+    build/generic/web/viewer.css
+RUN sed -i \
+    -e 's+../build/pdf.worker.mjs+../public/pdf.worker.min.mjs+g' \
+    -e 's+../build/pdf.sandbox.mjs+../public/pdf.sandbox.min.mjs+g' \
     -e 's+../web/+./+g' \
     -e 's+compressed.tracemonkey-pldi-09.pdf++g' \
     build/generic/web/viewer.mjs
@@ -33,5 +38,9 @@ RUN echo " Done."
 
 # save result
 FROM scratch AS export-stage
-COPY --from=build-stage /pdf.js/build/generic/web /src/
-COPY --from=build-stage /pdf.js/build/generic/build /src/
+COPY --from=build-stage /pdf.js/build/generic/web/viewer.* /src/
+COPY --from=build-stage /pdf.js/build/generic/web/cmaps /dist/cmaps/
+COPY --from=build-stage /pdf.js/build/generic/web/images /dist/images/
+COPY --from=build-stage /pdf.js/build/generic/web/standard_fonts /dist/standard_fonts/
+COPY --from=build-stage /pdf.js/build/minified/build /public/
+COPY --from=build-stage /pdf.js/node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid* /dist/webfonts/

@@ -9,6 +9,7 @@ export default defineConfig({
   clean: true,
   bundle: true,
   dts: true,
+  publicDir: true,
   loader: {
     ".html": "text",
     ".css": "text",

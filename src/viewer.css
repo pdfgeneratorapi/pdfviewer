@@ -304,8 +304,8 @@
       }
 
 :is(.dialog .mainContainer) .messageBar{
-      --message-bar-warning-icon:url(images/messageBar_warning.svg);
-      --closing-button-icon:url(images/messageBar_closingButton.svg);
+      --message-bar-warning-icon:url(public/images/messageBar_warning.svg);
+      --closing-button-icon:url(public/images/messageBar_closingButton.svg);
 
       --message-bar-bg-color:#ffebcd;
       --message-bar-fg-color:#15141a;
@@ -1608,11 +1608,11 @@
       var(--outline-around-width)
   );
   --editorFreeText-editing-cursor:text;
-  --editorInk-editing-cursor:url(images/cursor-editorInk.svg) 0 16, pointer;
-  --editorHighlight-editing-cursor:url(images/cursor-editorTextHighlight.svg) 24 24, text;
-  --editorFreeHighlight-editing-cursor:url(images/cursor-editorFreeHighlight.svg) 1 18, pointer;
+  --editorInk-editing-cursor:url(public/images/cursor-editorInk.svg) 0 16, pointer;
+  --editorHighlight-editing-cursor:url(public/images/cursor-editorTextHighlight.svg) 24 24, text;
+  --editorFreeHighlight-editing-cursor:url(public/images/cursor-editorFreeHighlight.svg) 1 18, pointer;
 
-  --new-alt-text-warning-image:url(images/altText_warning.svg);
+  --new-alt-text-warning-image:url(public/images/altText_warning.svg);
 }
 .visuallyHidden{
   position:absolute;
@@ -1646,7 +1646,7 @@
 
 @media (min-resolution: 1.1dppx){
   :root{
-    --editorFreeText-editing-cursor:url(images/cursor-editorFreeText.svg) 0 16, text;
+    --editorFreeText-editing-cursor:url(public/images/cursor-editorFreeText.svg) 0 16, text;
   }
 }
 
@@ -1755,9 +1755,9 @@
     }
 
 :is(.annotationEditorLayer :is(.freeTextEditor,.inkEditor,.stampEditor,.highlightEditor),.textLayer) .editToolbar{
-    --editor-toolbar-delete-image:url(images/editor-toolbar-delete.svg);
+    --editor-toolbar-delete-image:url(public/images/editor-toolbar-delete.svg);
     --editor-toolbar-bg-color:#f0f0f4;
-    --editor-toolbar-highlight-image:url(images/toolbarButton-editorHighlight.svg);
+    --editor-toolbar-highlight-image:url(public/images/toolbarButton-editorHighlight.svg);
     --editor-toolbar-fg-color:#2e2e56;
     --editor-toolbar-border-color:#8f8f9d;
     --editor-toolbar-hover-border-color:var(--editor-toolbar-border-color);
@@ -1945,8 +1945,8 @@
         }
 
 :is(:is(:is(.annotationEditorLayer :is(.freeTextEditor,.inkEditor,.stampEditor,.highlightEditor),.textLayer) .editToolbar) .buttons) .altText{
-        --alt-text-add-image:url(images/altText_add.svg);
-        --alt-text-done-image:url(images/altText_done.svg);
+        --alt-text-add-image:url(public/images/altText_add.svg);
+        --alt-text-done-image:url(public/images/altText_done.svg);
 
         display:flex;
         align-items:center;
@@ -2398,8 +2398,8 @@
     }
 
 .dialog.newAltText{
-  --new-alt-text-ai-disclaimer-icon:url(images/altText_disclaimer.svg);
-  --new-alt-text-spinner-icon:url(images/altText_spinner.svg);
+  --new-alt-text-ai-disclaimer-icon:url(public/images/altText_disclaimer.svg);
+  --new-alt-text-spinner-icon:url(public/images/altText_spinner.svg);
   --preview-image-bg-color:#f0f0f4;
   --preview-image-border:none;
 }
@@ -2696,7 +2696,7 @@
       }
 
 :is(.annotationEditorLayer .highlightEditor) .editToolbar{
-      --editor-toolbar-colorpicker-arrow-image:url(images/toolbarButton-menuArrow.svg);
+      --editor-toolbar-colorpicker-arrow-image:url(public/images/toolbarButton-menuArrow.svg);
 
       transform-origin:center !important;
     }
@@ -3155,7 +3155,7 @@
   content:"";
   width:100%;
   height:100%;
-  background:url("images/loading-icon.gif") center no-repeat;
+  background:url("public/images/loading-icon.gif") center no-repeat;
   display:none;
   transition-property:display;
   transition-delay:var(--loading-icon-delay);
@@ -3248,51 +3248,51 @@
   --dialog-button-bg-color:rgb(12 12 13 / 0.1);
   --dialog-button-hover-bg-color:rgb(12 12 13 / 0.3);
 
-  --loading-icon:url(images/loading.svg);
-  --treeitem-expanded-icon:url(images/treeitem-expanded.svg);
-  --treeitem-collapsed-icon:url(images/treeitem-collapsed.svg);
-  --toolbarButton-editorFreeText-icon:url(images/toolbarButton-editorFreeText.svg);
-  --toolbarButton-editorHighlight-icon:url(images/toolbarButton-editorHighlight.svg);
-  --toolbarButton-editorInk-icon:url(images/toolbarButton-editorInk.svg);
-  --toolbarButton-editorStamp-icon:url(images/toolbarButton-editorStamp.svg);
-  --toolbarButton-menuArrow-icon:url(images/toolbarButton-menuArrow.svg);
-  --toolbarButton-sidebarToggle-icon:url(images/toolbarButton-sidebarToggle.svg);
-  --toolbarButton-secondaryToolbarToggle-icon:url(images/toolbarButton-secondaryToolbarToggle.svg);
-  --toolbarButton-pageUp-icon:url(images/toolbarButton-pageUp.svg);
-  --toolbarButton-pageDown-icon:url(images/toolbarButton-pageDown.svg);
-  --toolbarButton-zoomOut-icon:url(images/toolbarButton-zoomOut.svg);
-  --toolbarButton-zoomIn-icon:url(images/toolbarButton-zoomIn.svg);
-  --toolbarButton-presentationMode-icon:url(images/toolbarButton-presentationMode.svg);
-  --toolbarButton-print-icon:url(images/toolbarButton-print.svg);
-  --toolbarButton-openFile-icon:url(images/toolbarButton-openFile.svg);
-  --toolbarButton-download-icon:url(images/toolbarButton-download.svg);
-  --toolbarButton-bookmark-icon:url(images/toolbarButton-bookmark.svg);
-  --toolbarButton-viewThumbnail-icon:url(images/toolbarButton-viewThumbnail.svg);
-  --toolbarButton-viewOutline-icon:url(images/toolbarButton-viewOutline.svg);
-  --toolbarButton-viewAttachments-icon:url(images/toolbarButton-viewAttachments.svg);
-  --toolbarButton-viewLayers-icon:url(images/toolbarButton-viewLayers.svg);
-  --toolbarButton-currentOutlineItem-icon:url(images/toolbarButton-currentOutlineItem.svg);
-  --toolbarButton-search-icon:url(images/toolbarButton-search.svg);
-  --findbarButton-previous-icon:url(images/findbarButton-previous.svg);
-  --findbarButton-next-icon:url(images/findbarButton-next.svg);
-  --secondaryToolbarButton-firstPage-icon:url(images/secondaryToolbarButton-firstPage.svg);
-  --secondaryToolbarButton-lastPage-icon:url(images/secondaryToolbarButton-lastPage.svg);
-  --secondaryToolbarButton-rotateCcw-icon:url(images/secondaryToolbarButton-rotateCcw.svg);
-  --secondaryToolbarButton-rotateCw-icon:url(images/secondaryToolbarButton-rotateCw.svg);
-  --secondaryToolbarButton-selectTool-icon:url(images/secondaryToolbarButton-selectTool.svg);
-  --secondaryToolbarButton-handTool-icon:url(images/secondaryToolbarButton-handTool.svg);
-  --secondaryToolbarButton-scrollPage-icon:url(images/secondaryToolbarButton-scrollPage.svg);
-  --secondaryToolbarButton-scrollVertical-icon:url(images/secondaryToolbarButton-scrollVertical.svg);
-  --secondaryToolbarButton-scrollHorizontal-icon:url(images/secondaryToolbarButton-scrollHorizontal.svg);
-  --secondaryToolbarButton-scrollWrapped-icon:url(images/secondaryToolbarButton-scrollWrapped.svg);
-  --secondaryToolbarButton-spreadNone-icon:url(images/secondaryToolbarButton-spreadNone.svg);
-  --secondaryToolbarButton-spreadOdd-icon:url(images/secondaryToolbarButton-spreadOdd.svg);
-  --secondaryToolbarButton-spreadEven-icon:url(images/secondaryToolbarButton-spreadEven.svg);
+  --loading-icon:url(public/images/loading.svg);
+  --treeitem-expanded-icon:url(public/images/treeitem-expanded.svg);
+  --treeitem-collapsed-icon:url(public/images/treeitem-collapsed.svg);
+  --toolbarButton-editorFreeText-icon:url(public/images/toolbarButton-editorFreeText.svg);
+  --toolbarButton-editorHighlight-icon:url(public/images/toolbarButton-editorHighlight.svg);
+  --toolbarButton-editorInk-icon:url(public/images/toolbarButton-editorInk.svg);
+  --toolbarButton-editorStamp-icon:url(public/images/toolbarButton-editorStamp.svg);
+  --toolbarButton-menuArrow-icon:url(public/images/toolbarButton-menuArrow.svg);
+  --toolbarButton-sidebarToggle-icon:url(public/images/toolbarButton-sidebarToggle.svg);
+  --toolbarButton-secondaryToolbarToggle-icon:url(public/images/toolbarButton-secondaryToolbarToggle.svg);
+  --toolbarButton-pageUp-icon:url(public/images/toolbarButton-pageUp.svg);
+  --toolbarButton-pageDown-icon:url(public/images/toolbarButton-pageDown.svg);
+  --toolbarButton-zoomOut-icon:url(public/images/toolbarButton-zoomOut.svg);
+  --toolbarButton-zoomIn-icon:url(public/images/toolbarButton-zoomIn.svg);
+  --toolbarButton-presentationMode-icon:url(public/images/toolbarButton-presentationMode.svg);
+  --toolbarButton-print-icon:url(public/images/toolbarButton-print.svg);
+  --toolbarButton-openFile-icon:url(public/images/toolbarButton-openFile.svg);
+  --toolbarButton-download-icon:url(public/images/toolbarButton-download.svg);
+  --toolbarButton-bookmark-icon:url(public/images/toolbarButton-bookmark.svg);
+  --toolbarButton-viewThumbnail-icon:url(public/images/toolbarButton-viewThumbnail.svg);
+  --toolbarButton-viewOutline-icon:url(public/images/toolbarButton-viewOutline.svg);
+  --toolbarButton-viewAttachments-icon:url(public/images/toolbarButton-viewAttachments.svg);
+  --toolbarButton-viewLayers-icon:url(public/images/toolbarButton-viewLayers.svg);
+  --toolbarButton-currentOutlineItem-icon:url(public/images/toolbarButton-currentOutlineItem.svg);
+  --toolbarButton-search-icon:url(public/images/toolbarButton-search.svg);
+  --findbarButton-previous-icon:url(public/images/findbarButton-previous.svg);
+  --findbarButton-next-icon:url(public/images/findbarButton-next.svg);
+  --secondaryToolbarButton-firstPage-icon:url(public/images/secondaryToolbarButton-firstPage.svg);
+  --secondaryToolbarButton-lastPage-icon:url(public/images/secondaryToolbarButton-lastPage.svg);
+  --secondaryToolbarButton-rotateCcw-icon:url(public/images/secondaryToolbarButton-rotateCcw.svg);
+  --secondaryToolbarButton-rotateCw-icon:url(public/images/secondaryToolbarButton-rotateCw.svg);
+  --secondaryToolbarButton-selectTool-icon:url(public/images/secondaryToolbarButton-selectTool.svg);
+  --secondaryToolbarButton-handTool-icon:url(public/images/secondaryToolbarButton-handTool.svg);
+  --secondaryToolbarButton-scrollPage-icon:url(public/images/secondaryToolbarButton-scrollPage.svg);
+  --secondaryToolbarButton-scrollVertical-icon:url(public/images/secondaryToolbarButton-scrollVertical.svg);
+  --secondaryToolbarButton-scrollHorizontal-icon:url(public/images/secondaryToolbarButton-scrollHorizontal.svg);
+  --secondaryToolbarButton-scrollWrapped-icon:url(public/images/secondaryToolbarButton-scrollWrapped.svg);
+  --secondaryToolbarButton-spreadNone-icon:url(public/images/secondaryToolbarButton-spreadNone.svg);
+  --secondaryToolbarButton-spreadOdd-icon:url(public/images/secondaryToolbarButton-spreadOdd.svg);
+  --secondaryToolbarButton-spreadEven-icon:url(public/images/secondaryToolbarButton-spreadEven.svg);
   --secondaryToolbarButton-imageAltTextSettings-icon:var(
     --toolbarButton-editorStamp-icon
   );
-  --secondaryToolbarButton-documentProperties-icon:url(images/secondaryToolbarButton-documentProperties.svg);
-  --editorParams-stampAddImage-icon:url(images/toolbarButton-zoomIn.svg);
+  --secondaryToolbarButton-documentProperties-icon:url(public/images/secondaryToolbarButton-documentProperties.svg);
+  --editorParams-stampAddImage-icon:url(public/images/toolbarButton-zoomIn.svg);
 }
 
 [dir="rtl"]:root{

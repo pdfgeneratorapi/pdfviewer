@@ -832,7 +832,7 @@ const defaultOptions = {
     kind: OptionKind.WORKER
   },
   workerSrc: {
-    value: "./pdf.worker.mjs",
+    value: "../public/pdf.worker.min.mjs",
     kind: OptionKind.WORKER
   }
 };
@@ -842,7 +842,7 @@ const defaultOptions = {
     kind: OptionKind.VIEWER
   };
   defaultOptions.sandboxBundleSrc = {
-    value: "./pdf.sandbox.mjs",
+    value: "../public/pdf.sandbox.min.mjs",
     kind: OptionKind.VIEWER
   };
   defaultOptions.viewerCssTheme = {

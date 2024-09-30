@@ -19,6 +19,7 @@ declare class PDFViewer {
     private render;
     private loadStyles;
     private loadScripts;
+    private getPDFJsApplication;
 }
 
 export { PDFViewer, type PDFViewerOptions, type PDFViewerParams };

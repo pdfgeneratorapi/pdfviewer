@@ -22,7 +22,7 @@
 
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
-/******/ 
+/******/
 /************************************************************************/
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
@@ -35,12 +35,12 @@
 /******/ 		}
 /******/ 	};
 /******/ })();
-/******/ 
+/******/
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
 /******/ (() => {
 /******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ })();
-/******/ 
+/******/
 /************************************************************************/
 var __webpack_exports__ = {};
 
@@ -832,7 +832,7 @@ const defaultOptions = {
     kind: OptionKind.WORKER
   },
   workerSrc: {
-    value: "../public/pdf.worker.min.mjs",
+    value: "../dist/pdf.worker.min.mjs",
     kind: OptionKind.WORKER
   }
 };
@@ -842,7 +842,7 @@ const defaultOptions = {
     kind: OptionKind.VIEWER
   };
   defaultOptions.sandboxBundleSrc = {
-    value: "../public/pdf.sandbox.min.mjs",
+    value: "../dist/pdf.sandbox.min.mjs",
     kind: OptionKind.VIEWER
   };
   defaultOptions.viewerCssTheme = {
@@ -10699,7 +10699,7 @@ class PDFViewer {
   #scaleTimeoutId = null;
   #textLayerMode = TextLayerMode.ENABLE;
   constructor(options) {
-    const viewerVersion = "4.6.64";
+    const viewerVersion = "4.6.67";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -13347,6 +13347,10 @@ const PDFViewerApplication = {
     }
     this.pdfViewer.currentScaleValue = DEFAULT_SCALE_VALUE;
   },
+  togglePrinting(value) {
+    console.log('toggle');
+    this.printing = value;
+  },
   get pagesCount() {
     return this.pdfDocument ? this.pdfDocument.numPages : 0;
   },
@@ -15042,8 +15046,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "4.6.64";
-const pdfjsBuild = "87acda686";
+const pdfjsVersion = "4.6.67";
+const pdfjsBuild = "64f4fdbbc";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

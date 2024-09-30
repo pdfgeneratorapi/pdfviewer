@@ -6,10 +6,8 @@ export default defineConfig({
   format: ["cjs", "esm", "iife"],
   splitting: false,
   sourcemap: true,
-  clean: true,
   bundle: true,
   dts: true,
-  publicDir: true,
   loader: {
     ".html": "text",
     ".css": "text",

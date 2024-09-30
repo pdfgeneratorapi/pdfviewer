@@ -1,8 +1,7 @@
 import htmlContent from "./viewer.html";
 import pdfjsStyles from "./viewer.css";
 import pdfjsViewer from "./viewer.mjs";
-import pdfjsLib from "../public/pdf.min.mjs";
-import fortAwesomeStyles from "../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
+import pdfjsLib from "../dist/pdf.min.mjs";
 
 export interface PDFViewerParams {
   readonly container: HTMLElement;
@@ -17,7 +16,7 @@ export interface PDFViewerOptions {
 
 interface PDFViewerApplication {
   open(params: { url: string }): Promise<void>;
-  disablePrinting(): void;
+  togglePrinting(value: boolean): void;
 }
 
 interface IframeWindow extends Window {
@@ -52,6 +51,10 @@ export class PDFViewer {
   };
 
   private initUI = (): void => {
+    // if (this.container instanceof Element) {
+    //   throw new Error(`PDFViewer error: Element .`);
+    // }
+
     const iframe = document.createElement("iframe") as HTMLIFrameElement;
     iframe.id = this.iframeId = `${this.container.id}-iframe`;
     this.container.appendChild(iframe);
@@ -70,6 +73,31 @@ export class PDFViewer {
   };
 
   private render = async (pdf: string): Promise<void> => {
+    try {
+      await this.getPDFJsApplication().open({ url: pdf });
+    } catch (e) {
+      console.error("PDFViewer error: PDF document can not be loaded - " + e);
+      alert("Corrupted PDF file.");
+    }
+  };
+
+  private loadStyles = (document: Document): void => {
+    const stylesElement = document.createElement('style');
+    stylesElement.textContent = pdfjsStyles;
+    document.head.appendChild(stylesElement);
+  };
+
+  private loadScripts = (document: Document): void => {
+    [pdfjsLib, pdfjsViewer].forEach((script) => {
+      const scriptElement: HTMLScriptElement = document.createElement("script");
+      scriptElement.type = "module";
+      scriptElement.defer = true;
+      scriptElement.textContent = script;
+      document.body.appendChild(scriptElement);
+    });
+  };
+
+  private getPDFJsApplication = (): PDFViewerApplication => {
     const viewerContainer = document.getElementById(this.iframeId) as HTMLIFrameElement;
 
     if (!viewerContainer) {
@@ -82,30 +110,7 @@ export class PDFViewer {
       throw new Error(`PDFViewer error: iframe window is corrupted.`);
     }
 
-    try {
-      await viewerWindow.PDFViewerApplication.open({ url: pdf });
-    } catch (e) {
-      console.error("PDFViewer error: PDF document can not be loaded - " + e);
-      alert("Corrupted PDF file.");
-    }
-  };
-
-  private loadStyles = (document: Document): void => {
-    [pdfjsStyles, fortAwesomeStyles].forEach((styles) => {
-      const stylesElement = document.createElement('style');
-      stylesElement.textContent = styles;
-      document.head.appendChild(stylesElement);
-    });
-  };
-
-  private loadScripts = (document: Document): void => {
-    [pdfjsLib, pdfjsViewer].forEach((script) => {
-      const scriptElement: HTMLScriptElement = document.createElement("script");
-      scriptElement.type = "module";
-      scriptElement.defer = true;
-      scriptElement.textContent = script;
-      document.body.appendChild(scriptElement);
-    });
+    return viewerWindow.PDFViewerApplication;
   };
 }
 

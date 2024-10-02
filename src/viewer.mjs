@@ -22,7 +22,7 @@
 
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
-/******/
+/******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
@@ -35,12 +35,12 @@
 /******/ 		}
 /******/ 	};
 /******/ })();
-/******/
+/******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
 /******/ (() => {
 /******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ })();
-/******/
+/******/ 
 /************************************************************************/
 var __webpack_exports__ = {};
 
@@ -10699,7 +10699,7 @@ class PDFViewer {
   #scaleTimeoutId = null;
   #textLayerMode = TextLayerMode.ENABLE;
   constructor(options) {
-    const viewerVersion = "4.6.67";
+    const viewerVersion = "4.6.68";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -12503,6 +12503,9 @@ class Toolbar {
   constructor(options, eventBus, toolbarDensity = 0) {
     this.#opts = options;
     this.eventBus = eventBus;
+    this.printing = true;
+    this.downloading = true;
+    this.uploading = true;
     const buttons = [{
       element: options.previous,
       eventName: "previouspage"
@@ -13301,6 +13304,13 @@ const PDFViewerApplication = {
       appConfig.toolbar?.print?.classList.add("hidden");
       appConfig.secondaryToolbar?.printButton.classList.add("hidden");
     }
+    if (!this.supportsDownloading) {
+      appConfig.toolbar?.download?.classList.add("hidden");
+      appConfig.secondaryToolbar?.downloadButton.classList.add("hidden");
+    }
+    if (!this.supportsUploading) {
+      appConfig.toolbar?.upload?.classList.add("hidden");
+    }
     if (!this.supportsFullscreen) {
       appConfig.secondaryToolbar?.presentationModeButton.classList.add("hidden");
     }
@@ -13347,9 +13357,33 @@ const PDFViewerApplication = {
     }
     this.pdfViewer.currentScaleValue = DEFAULT_SCALE_VALUE;
   },
-  togglePrinting(value) {
-    console.log('toggle');
-    this.printing = value;
+  enablePrinting() {
+    this.toolbar.printing = true;
+    this.appConfig.toolbar?.print?.classList.remove("hidden");
+    this.appConfig.secondaryToolbar?.printButton.classList.remove("hidden");
+  },
+  disablePrinting() {
+    this.toolbar.printing = false;
+    this.appConfig.toolbar?.print?.classList.add("hidden");
+    this.appConfig.secondaryToolbar?.printButton.classList.add("hidden");
+  },
+  enableDownloading() {
+    this.toolbar.downloading = true;
+    this.appConfig.toolbar?.download?.classList.remove("hidden");
+    this.appConfig.secondaryToolbar?.downloadButton.classList.remove("hidden");
+  },
+  disableDownloading() {
+    this.toolbar.downloading = false;
+    this.appConfig.toolbar?.download?.classList.add("hidden");
+    this.appConfig.secondaryToolbar?.downloadButton.classList.add("hidden");
+  },
+  enableUploading() {
+    this.toolbar.uploading = true;
+    this.appConfig.toolbar?.upload?.classList.remove("hidden");
+  },
+  disableUploading() {
+    this.toolbar.uploading = false;
+    this.appConfig.toolbar?.upload?.classList.add("hidden");
   },
   get pagesCount() {
     return this.pdfDocument ? this.pdfDocument.numPages : 0;
@@ -13361,7 +13395,13 @@ const PDFViewerApplication = {
     this.pdfViewer.currentPageNumber = val;
   },
   get supportsPrinting() {
-    return PDFPrintServiceFactory.supportsPrinting;
+    return PDFPrintServiceFactory.supportsPrinting && this.toolbar.printing === true;
+  },
+  get supportsDownloading() {
+    return this.toolbar.downloading === true;
+  },
+  get supportsUploading() {
+    return this.toolbar.uploading === true;
   },
   get supportsFullscreen() {
     return shadow(this, "supportsFullscreen", document.fullscreenEnabled);
@@ -13557,6 +13597,9 @@ const PDFViewerApplication = {
     }
   },
   async downloadOrSave() {
+    if (!this.supportsDownloading) {
+      return;
+    }
     const {
       classList
     } = this.appConfig.appContainer;
@@ -14386,7 +14429,7 @@ initCom(PDFViewerApplication);
     }
   };
   var onFileInputChange = function (evt) {
-    if (this.pdfViewer?.isInPresentationMode) {
+    if (this.pdfViewer?.isInPresentationMode || !this.supportsUploading) {
       return;
     }
     const file = evt.fileInput.files[0];
@@ -15046,8 +15089,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "4.6.67";
-const pdfjsBuild = "64f4fdbbc";
+const pdfjsVersion = "4.6.68";
+const pdfjsBuild = "6cc6ec0c4";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

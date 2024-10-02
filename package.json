@@ -1,8 +1,10 @@
 {
-  "name": "esm-test",
+  "name": "pdf-generator-api-pdfviewer",
+  "author": "PDF Generator API",
+  "repository": "pdfgeneratorapi/pdfviewer-test",
   "version": "1.0.0",
-  "description": "PDF Viewer by PDF Generator API",
-  "main": "./src/app.ts",
+  "description": "PDF viewer by PDF Generator API",
+  "main": "./dist/PDFViewer.global.js",
   "scripts": {
     "build": "tsup",
     "build:docker": "docker build . --output ."
@@ -15,7 +17,6 @@
     }
   },
   "keywords": [],
-  "author": "",
   "license": "MIT",
   "devDependencies": {
     "tsup": "^8.3.0",

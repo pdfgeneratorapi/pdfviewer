@@ -10,16 +10,15 @@ interface PDFViewerOptions {
 declare class PDFViewer {
     private readonly container;
     protected iframeId: string;
-    protected options?: PDFViewerOptions | undefined;
     constructor(params: PDFViewerParams);
-    setOptions: (options: PDFViewerOptions) => void;
+    setOptions: (options: PDFViewerOptions) => Promise<void>;
     loadUrl: (url: string) => Promise<void>;
     loadBase64: (encodedPdf: string) => Promise<void>;
-    private initUI;
     private render;
+    private initUI;
     private loadStyles;
     private loadScripts;
-    private getPDFJsApplication;
+    private pdfJsApplication;
 }
 
 export { PDFViewer, type PDFViewerOptions, type PDFViewerParams };

@@ -5,7 +5,6 @@ export default defineConfig({
   outDir: "dist",
   format: ["cjs", "esm", "iife"],
   splitting: false,
-  sourcemap: true,
   bundle: true,
   dts: true,
   loader: {

@@ -14,9 +14,19 @@ export interface PDFViewerOptions {
   readonly upload: boolean;
 }
 
+interface OpenDocumentParams {
+  url?: string | undefined;
+  data?: string | undefined;
+}
+
 interface PDFViewerApplication {
-  open(params: { url: string }): Promise<void>;
-  togglePrinting(value: boolean): void;
+  open(params: OpenDocumentParams): Promise<void>;
+  enablePrinting(): void;
+  disablePrinting(): void;
+  enableDownloading(): void;
+  disableDownloading(): void;
+  enableUploading(): void;
+  disableUploading(): void;
 }
 
 interface IframeWindow extends Window {
@@ -27,33 +37,49 @@ interface IframeWindow extends Window {
 export class PDFViewer {
   private readonly container: HTMLElement;
   protected iframeId: string = "";
-  protected options?: PDFViewerOptions | undefined;
 
   constructor(params: PDFViewerParams) {
     this.container = params.container;
-    this.options = params.options;
     this.initUI();
+
+    if (params.options) {
+      this.setOptions(params.options);
+    }
   }
 
-  public setOptions = (options: PDFViewerOptions): void => {
-    this.options = options;
+  public setOptions = async (options: PDFViewerOptions): Promise<void> => {
+    const pdfjsApp = await this.pdfJsApplication();
+
+    options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
+    options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
+    options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();
   };
 
   public loadUrl = async (url: string): Promise<void> => {
     const response = await fetch(url);
     const blob = await response.blob();
 
-    await this.render(URL.createObjectURL(blob));
+    await this.render({ url: URL.createObjectURL(blob) });
   };
 
   public loadBase64 = async (encodedPdf: string): Promise<void> => {
-    await this.render(encodedPdf);
+    await this.render({ data: window.atob(encodedPdf) });
+  };
+
+  private render = async (documentParams: OpenDocumentParams): Promise<void> => {
+    const pdfjsApp = await this.pdfJsApplication();
+
+    try {
+      await pdfjsApp.open(documentParams);
+    } catch (error) {
+      throw new Error(`PDFViewer error: PDF document can not be loaded - ${error}`);
+    }
   };
 
   private initUI = (): void => {
-    // if (this.container instanceof Element) {
-    //   throw new Error(`PDFViewer error: Element .`);
-    // }
+    if (!(this.container instanceof Element)) {
+      throw new Error(`PDFViewer error: Wrong iframe container. Example: document.getElementById("#id").`);
+    }
 
     const iframe = document.createElement("iframe") as HTMLIFrameElement;
     iframe.id = this.iframeId = `${this.container.id}-iframe`;
@@ -69,15 +95,6 @@ export class PDFViewer {
 
       this.loadStyles(iframeDocument);
       this.loadScripts(iframeDocument);
-    }
-  };
-
-  private render = async (pdf: string): Promise<void> => {
-    try {
-      await this.getPDFJsApplication().open({ url: pdf });
-    } catch (e) {
-      console.error("PDFViewer error: PDF document can not be loaded - " + e);
-      alert("Corrupted PDF file.");
     }
   };
 
@@ -97,20 +114,26 @@ export class PDFViewer {
     });
   };
 
-  private getPDFJsApplication = (): PDFViewerApplication => {
-    const viewerContainer = document.getElementById(this.iframeId) as HTMLIFrameElement;
+  private pdfJsApplication = (): Promise<PDFViewerApplication> => {
+    return new Promise<PDFViewerApplication>(
+      (resolve) => {
+        setTimeout(() => {
+          const viewerContainer = document.getElementById(this.iframeId) as HTMLIFrameElement;
 
-    if (!viewerContainer) {
-      throw new Error(`PDFViewer error: iframe container ${this.iframeId} not found.`);
-    }
+          if (!viewerContainer) {
+            throw new Error(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" not found.`);
+          }
 
-    const viewerWindow = viewerContainer.contentWindow as IframeWindow;
+          const viewerWindow = viewerContainer.contentWindow as IframeWindow;
 
-    if (!viewerWindow) {
-      throw new Error(`PDFViewer error: iframe window is corrupted.`);
-    }
+          if (!viewerWindow) {
+            throw new Error(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" is corrupted.`);
+          }
 
-    return viewerWindow.PDFViewerApplication;
+          resolve(viewerWindow.PDFViewerApplication);
+        }, 200);
+      }
+    );
   };
 }
 

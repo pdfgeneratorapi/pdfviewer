@@ -4,18 +4,22 @@
   "repository": "pdfgeneratorapi/pdfviewer",
   "version": "1.0.0",
   "description": "PDF viewer by PDF Generator API",
-  "main": "./dist/PDFViewer.global.js",
+  "main": "./dist/PDFViewer.cjs",
+  "module": "./dist/PDFViewer.mjs",
+  "types": "./dist/PDFViewer.d.ts",
   "scripts": {
     "build": "tsup",
     "build:docker": "docker build . --output ."
   },
   "exports": {
     ".": {
-      "types": "./dist/PDFViewer.d.ts",
-      "require": "./dist/PDFViewer.js",
+      "require": "./dist/PDFViewer.cjs",
       "import": "./dist/PDFViewer.mjs"
     }
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [],
   "license": "MIT",
   "devDependencies": {

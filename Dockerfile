@@ -19,9 +19,6 @@ RUN sed -i \
     -e 's/\xEF\xBB\xBF//g' \
     build/generic/web/viewer.html
 RUN sed -i \
-    -e 's+images/+dist/images/+g' \
-    build/generic/web/viewer.css
-RUN sed -i \
     -e 's+../build/pdf.worker.mjs+../dist/pdf.worker.min.mjs+g' \
     -e 's+../build/pdf.sandbox.mjs+../dist/pdf.sandbox.min.mjs+g' \
     -e 's+../web/+./+g' \
@@ -37,6 +34,5 @@ RUN rm build/generic/web/debugger.css
 FROM scratch AS export-stage
 COPY --from=build-stage /pdf.js/build/generic/web/viewer.* /src/
 COPY --from=build-stage /pdf.js/build/generic/web/cmaps/ /dist/cmaps/
-COPY --from=build-stage /pdf.js/build/generic/web/images/ /dist/images/
 COPY --from=build-stage /pdf.js/build/generic/web/standard_fonts/ /dist/standard_fonts/
 COPY --from=build-stage /pdf.js/build/minified/build /dist/

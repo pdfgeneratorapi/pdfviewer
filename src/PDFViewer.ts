@@ -2,13 +2,14 @@ import htmlContent from "./viewer.html";
 import pdfjsStyles from "./viewer.css";
 import pdfjsViewer from "./viewer.mjs";
 import pdfjsLib from "../dist/pdf.min.mjs";
+import pdfjsWorker from "../dist/pdf.worker.min.mjs";
 
-export interface PDFViewerParams {
+interface PDFViewerParams {
   readonly container: HTMLElement;
   options?: PDFViewerOptions | undefined;
 }
 
-export interface PDFViewerOptions {
+interface PDFViewerOptions {
   readonly print: boolean;
   readonly download: boolean;
   readonly upload: boolean;
@@ -34,7 +35,7 @@ interface IframeWindow extends Window {
   PDFViewerApplication: PDFViewerApplication;
 }
 
-export class PDFViewer {
+class PDFViewer {
   private readonly container: HTMLElement;
   protected iframeId: string = "";
 
@@ -105,7 +106,7 @@ export class PDFViewer {
   };
 
   private loadScripts = (document: Document): void => {
-    [pdfjsLib, pdfjsViewer].forEach((script) => {
+    [pdfjsLib, pdfjsWorker, pdfjsViewer].forEach((script) => {
       const scriptElement: HTMLScriptElement = document.createElement("script");
       scriptElement.type = "module";
       scriptElement.defer = true;
@@ -137,4 +138,5 @@ export class PDFViewer {
   };
 }
 
-(window as any).PDFViewer = PDFViewer;
+window.PDFViewer = PDFViewer;
+export { PDFViewerParams, PDFViewerOptions, PDFViewer };

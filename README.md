@@ -1,6 +1,6 @@
 # PDF viewer by PDF Generator API
 
-[PDFViewer](http://pdfviewer.com/) is a library to display and interact with PDF documents in web applications, 
+[PDFViewer](http://pdfviewer.com/) is a library to display and interact with PDF documents in web applications,
 offering features such as document loading via URL or base64 encoded strings.
 
 ## Installing PDFViewer
@@ -16,7 +16,17 @@ offering features such as document loading via URL or base64 encoded strings.
 
 ```html
 <div id="id"></div>
-<script src="./dist/PDFViewer.global.js"></script>
+<script src="PDFViewer.iife.js"></script>
+<script>
+    const viewer = new PDFViewer({
+        container: document.getElementById("id"),
+    });
+
+    viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
+</script>
+```
+```html
+<script type="module" src="PDFViewer.mjs"></script>
 <script>
     const viewer = new PDFViewer({
         container: document.getElementById("id"),
@@ -26,34 +36,28 @@ offering features such as document loading via URL or base64 encoded strings.
 </script>
 ```
 
+### ECMAScript module
+
+```javascript
+import { PDFViewer } from "pdf-generator-api-pdfviewer";
+
+const viewer = new PDFViewer({
+  container: document.getElementById("id"),
+});
+
+viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
+```
+
 ### CommonJS
 
 ```javascript
-const { PDFViewer } = require("pdf-generator-api-pdfviewer");
+const PDFViewer = require("pdf-generator-api-pdfviewer");
 
 const viewer = new PDFViewer({
   container: document.getElementById("id"),
 });
-```
 
-### ES Module
-
-```javascript
-import { PDFViewer } from "pdf-generator-api-pdfviewer";
-
-const viewer = new PDFViewer({
-  container: document.getElementById("id"),
-});
-```
-
-### Typescript
-
-```typescript
-import { PDFViewer } from "pdf-generator-api-pdfviewer";
-
-const viewer = new PDFViewer({
-  container: document.getElementById("id") as HTMLElement,
-});
+viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
 ```
 
 ## Loading PDF documents
@@ -77,7 +81,8 @@ const viewer = new PDFViewer({
   container: document.getElementById("id"),
 })
 
-const base64encodedPdf = "JVBERi0xLjcKCjEgMCBvYmogICUgZW50cnkgcG9pbnQKPDwKICAvVHlwZSAvQ2F0YWxvZwog" +
+const base64encodedPdf =
+  "JVBERi0xLjcKCjEgMCBvYmogICUgZW50cnkgcG9pbnQKPDwKICAvVHlwZSAvQ2F0YWxvZwog" +
   "IC9QYWdlcyAyIDAgUgo+PgplbmRvYmoKCjIgMCBvYmoKPDwKICAvVHlwZSAvUGFnZXMKICAv" +
   "TWVkaWFCb3ggWyAwIDAgMjAwIDIwMCBdCiAgL0NvdW50IDEKICAvS2lkcyBbIDMgMCBSIF0K" +
   "Pj4KZW5kb2JqCgozIDAgb2JqCjw8CiAgL1R5cGUgL1BhZ2UKICAvUGFyZW50IDIgMCBSCiAg" +

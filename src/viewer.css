@@ -303,8 +303,8 @@
       }
 
 :is(.dialog .mainContainer) .messageBar{
-      --message-bar-warning-icon:url(dist/images/messageBar_warning.svg);
-      --closing-button-icon:url(dist/images/messageBar_closingButton.svg);
+      --message-bar-warning-icon:url(images/messageBar_warning.svg);
+      --closing-button-icon:url(images/messageBar_closingButton.svg);
 
       --message-bar-bg-color:#ffebcd;
       --message-bar-fg-color:#15141a;
@@ -1607,11 +1607,11 @@
       var(--outline-around-width)
   );
   --editorFreeText-editing-cursor:text;
-  --editorInk-editing-cursor:url(dist/images/cursor-editorInk.svg) 0 16, pointer;
-  --editorHighlight-editing-cursor:url(dist/images/cursor-editorTextHighlight.svg) 24 24, text;
-  --editorFreeHighlight-editing-cursor:url(dist/images/cursor-editorFreeHighlight.svg) 1 18, pointer;
+  --editorInk-editing-cursor:url(images/cursor-editorInk.svg) 0 16, pointer;
+  --editorHighlight-editing-cursor:url(images/cursor-editorTextHighlight.svg) 24 24, text;
+  --editorFreeHighlight-editing-cursor:url(images/cursor-editorFreeHighlight.svg) 1 18, pointer;
 
-  --new-alt-text-warning-image:url(dist/images/altText_warning.svg);
+  --new-alt-text-warning-image:url(images/altText_warning.svg);
 }
 .visuallyHidden{
   position:absolute;
@@ -1645,7 +1645,7 @@
 
 @media (min-resolution: 1.1dppx){
   :root{
-    --editorFreeText-editing-cursor:url(dist/images/cursor-editorFreeText.svg) 0 16, text;
+    --editorFreeText-editing-cursor:url(images/cursor-editorFreeText.svg) 0 16, text;
   }
 }
 
@@ -1754,9 +1754,9 @@
     }
 
 :is(.annotationEditorLayer :is(.freeTextEditor,.inkEditor,.stampEditor,.highlightEditor),.textLayer) .editToolbar{
-    --editor-toolbar-delete-image:url(dist/images/editor-toolbar-delete.svg);
+    --editor-toolbar-delete-image:url(images/editor-toolbar-delete.svg);
     --editor-toolbar-bg-color:#f0f0f4;
-    --editor-toolbar-highlight-image:url(dist/images/toolbarButton-editorHighlight.svg);
+    --editor-toolbar-highlight-image:url(images/toolbarButton-editorHighlight.svg);
     --editor-toolbar-fg-color:#2e2e56;
     --editor-toolbar-border-color:#8f8f9d;
     --editor-toolbar-hover-border-color:var(--editor-toolbar-border-color);
@@ -1944,8 +1944,8 @@
         }
 
 :is(:is(:is(.annotationEditorLayer :is(.freeTextEditor,.inkEditor,.stampEditor,.highlightEditor),.textLayer) .editToolbar) .buttons) .altText{
-        --alt-text-add-image:url(dist/images/altText_add.svg);
-        --alt-text-done-image:url(dist/images/altText_done.svg);
+        --alt-text-add-image:url(images/altText_add.svg);
+        --alt-text-done-image:url(images/altText_done.svg);
 
         display:flex;
         align-items:center;
@@ -2397,8 +2397,8 @@
     }
 
 .dialog.newAltText{
-  --new-alt-text-ai-disclaimer-icon:url(dist/images/altText_disclaimer.svg);
-  --new-alt-text-spinner-icon:url(dist/images/altText_spinner.svg);
+  --new-alt-text-ai-disclaimer-icon:url(images/altText_disclaimer.svg);
+  --new-alt-text-spinner-icon:url(images/altText_spinner.svg);
   --preview-image-bg-color:#f0f0f4;
   --preview-image-border:none;
 }
@@ -2695,7 +2695,7 @@
       }
 
 :is(.annotationEditorLayer .highlightEditor) .editToolbar{
-      --editor-toolbar-colorpicker-arrow-image:url(dist/images/toolbarButton-menuArrow.svg);
+      --editor-toolbar-colorpicker-arrow-image:url(images/toolbarButton-menuArrow.svg);
 
       transform-origin:center !important;
     }
@@ -3154,7 +3154,7 @@
   content:"";
   width:100%;
   height:100%;
-  background:url("dist/images/loading-icon.gif") center no-repeat;
+  background:url("images/loading-icon.gif") center no-repeat;
   display:none;
   transition-property:display;
   transition-delay:var(--loading-icon-delay);
@@ -3246,52 +3246,6 @@
   --dialog-button-border:none;
   --dialog-button-bg-color:rgb(12 12 13 / 0.1);
   --dialog-button-hover-bg-color:rgb(12 12 13 / 0.3);
-
-  --loading-icon:url(dist/images/loading.svg);
-  --treeitem-expanded-icon:url(dist/images/treeitem-expanded.svg);
-  --treeitem-collapsed-icon:url(dist/images/treeitem-collapsed.svg);
-  --toolbarButton-editorFreeText-icon:url(dist/images/toolbarButton-editorFreeText.svg);
-  --toolbarButton-editorHighlight-icon:url(dist/images/toolbarButton-editorHighlight.svg);
-  --toolbarButton-editorInk-icon:url(dist/images/toolbarButton-editorInk.svg);
-  --toolbarButton-editorStamp-icon:url(dist/images/toolbarButton-editorStamp.svg);
-  --toolbarButton-menuArrow-icon:url(dist/images/toolbarButton-menuArrow.svg);
-  --toolbarButton-sidebarToggle-icon:url(dist/images/toolbarButton-sidebarToggle.svg);
-  --toolbarButton-secondaryToolbarToggle-icon:url(dist/images/toolbarButton-secondaryToolbarToggle.svg);
-  --toolbarButton-pageUp-icon:url(dist/images/toolbarButton-pageUp.svg);
-  --toolbarButton-pageDown-icon:url(dist/images/toolbarButton-pageDown.svg);
-  --toolbarButton-zoomOut-icon:url(dist/images/toolbarButton-zoomOut.svg);
-  --toolbarButton-zoomIn-icon:url(dist/images/toolbarButton-zoomIn.svg);
-  --toolbarButton-presentationMode-icon:url(dist/images/toolbarButton-presentationMode.svg);
-  --toolbarButton-print-icon:url(dist/images/toolbarButton-print.svg);
-  --toolbarButton-openFile-icon:url(dist/images/toolbarButton-openFile.svg);
-  --toolbarButton-download-icon:url(dist/images/toolbarButton-download.svg);
-  --toolbarButton-bookmark-icon:url(dist/images/toolbarButton-bookmark.svg);
-  --toolbarButton-viewThumbnail-icon:url(dist/images/toolbarButton-viewThumbnail.svg);
-  --toolbarButton-viewOutline-icon:url(dist/images/toolbarButton-viewOutline.svg);
-  --toolbarButton-viewAttachments-icon:url(dist/images/toolbarButton-viewAttachments.svg);
-  --toolbarButton-viewLayers-icon:url(dist/images/toolbarButton-viewLayers.svg);
-  --toolbarButton-currentOutlineItem-icon:url(dist/images/toolbarButton-currentOutlineItem.svg);
-  --toolbarButton-search-icon:url(dist/images/toolbarButton-search.svg);
-  --findbarButton-previous-icon:url(dist/images/findbarButton-previous.svg);
-  --findbarButton-next-icon:url(dist/images/findbarButton-next.svg);
-  --secondaryToolbarButton-firstPage-icon:url(dist/images/secondaryToolbarButton-firstPage.svg);
-  --secondaryToolbarButton-lastPage-icon:url(dist/images/secondaryToolbarButton-lastPage.svg);
-  --secondaryToolbarButton-rotateCcw-icon:url(dist/images/secondaryToolbarButton-rotateCcw.svg);
-  --secondaryToolbarButton-rotateCw-icon:url(dist/images/secondaryToolbarButton-rotateCw.svg);
-  --secondaryToolbarButton-selectTool-icon:url(dist/images/secondaryToolbarButton-selectTool.svg);
-  --secondaryToolbarButton-handTool-icon:url(dist/images/secondaryToolbarButton-handTool.svg);
-  --secondaryToolbarButton-scrollPage-icon:url(dist/images/secondaryToolbarButton-scrollPage.svg);
-  --secondaryToolbarButton-scrollVertical-icon:url(dist/images/secondaryToolbarButton-scrollVertical.svg);
-  --secondaryToolbarButton-scrollHorizontal-icon:url(dist/images/secondaryToolbarButton-scrollHorizontal.svg);
-  --secondaryToolbarButton-scrollWrapped-icon:url(dist/images/secondaryToolbarButton-scrollWrapped.svg);
-  --secondaryToolbarButton-spreadNone-icon:url(dist/images/secondaryToolbarButton-spreadNone.svg);
-  --secondaryToolbarButton-spreadOdd-icon:url(dist/images/secondaryToolbarButton-spreadOdd.svg);
-  --secondaryToolbarButton-spreadEven-icon:url(dist/images/secondaryToolbarButton-spreadEven.svg);
-  --secondaryToolbarButton-imageAltTextSettings-icon:var(
-    --toolbarButton-editorStamp-icon
-  );
-  --secondaryToolbarButton-documentProperties-icon:url(dist/images/secondaryToolbarButton-documentProperties.svg);
-  --editorParams-stampAddImage-icon:url(dist/images/toolbarButton-zoomIn.svg);
 }
 
 [dir="rtl"]:root{

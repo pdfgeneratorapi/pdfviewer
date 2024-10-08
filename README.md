@@ -22,29 +22,6 @@ offering features such as document loading via URL and base64 encoded strings.
   * `download`: boolean - enable download button
   * `upload`: boolean - enable upload file button
 
-### Inline
-
-```html
-<div id="viewer-container"></div>
-<script src="PDFViewer.iife.js"></script>
-<script>
-    const viewer = new PDFViewer({
-        container: document.getElementById("viewer-container"),
-    });
-
-    viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
-</script>
-```
-```html
-<script type="module" src="PDFViewer.mjs"></script>
-<script>
-    const viewer = new PDFViewer({
-        container: document.getElementById("viewer-container"),
-    });
-
-    viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
-</script>
-```
 
 ### ECMAScript module
 
@@ -68,6 +45,30 @@ const viewer = new PDFViewer({
 });
 
 viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
+```
+
+### Inline
+
+```html
+<div id="viewer-container"></div>
+<script src="PDFViewer.iife.js"></script>
+<script>
+    const viewer = new PDFViewer({
+        container: document.getElementById("viewer-container"),
+    });
+
+    viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
+</script>
+```
+```html
+<script type="module" src="PDFViewer.mjs"></script>
+<script>
+    const viewer = new PDFViewer({
+        container: document.getElementById("viewer-container"),
+    });
+
+    viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
+</script>
 ```
 
 ## Loading PDF documents

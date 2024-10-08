@@ -51,7 +51,7 @@ viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/exampl
 
 ```html
 <div id="viewer-container"></div>
-<script src="PDFViewer.iife.js"></script>
+<script src="node_modules/pdf-generator-api-pdfviewer/dist/PDFViewer.iife.js"></script>
 <script>
     const viewer = new PDFViewer({
         container: document.getElementById("viewer-container"),
@@ -61,7 +61,7 @@ viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/exampl
 </script>
 ```
 ```html
-<script type="module" src="PDFViewer.mjs"></script>
+<script type="module" src="node_modules/pdf-generator-api-pdfviewer/dist/PDFViewer.mjs"></script>
 <script>
     const viewer = new PDFViewer({
         container: document.getElementById("viewer-container"),

@@ -16,6 +16,7 @@ export default defineConfig({
     }
   },
   format: ["cjs", "esm", "iife"],
+  globalName: "PDFGeneratorApi",
   splitting: false,
   bundle: true,
   minify: true,

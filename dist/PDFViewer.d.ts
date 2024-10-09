@@ -11,7 +11,7 @@ declare class PDFViewer {
     private readonly container;
     protected iframeId: string;
     constructor(params: PDFViewerParams);
-    setOptions: (options: PDFViewerOptions) => Promise<void>;
+    setOptions: (options: PDFViewerOptions) => void;
     loadUrl: (url: string) => Promise<void>;
     loadBase64: (encodedPdf: string) => Promise<void>;
     private render;

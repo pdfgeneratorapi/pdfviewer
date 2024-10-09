@@ -1,8 +1,8 @@
 import htmlContent from "./viewer.html";
 import pdfjsStyles from "./viewer.css";
 import pdfjsViewer from "./viewer.mjs";
-import pdfjsLib from "../dist/pdf.min.mjs";
-import pdfjsWorker from "../dist/pdf.worker.min.mjs";
+import pdfjsLib from "./pdf.min.mjs";
+import pdfjsWorker from "./pdf.worker.min.mjs";
 
 interface PDFViewerParams {
   readonly container: HTMLElement;
@@ -48,8 +48,8 @@ class PDFViewer {
     }
   }
 
-  public setOptions = async (options: PDFViewerOptions): Promise<void> => {
-    const pdfjsApp = await this.pdfJsApplication();
+  public setOptions = (options: PDFViewerOptions): void => {
+    const pdfjsApp = this.pdfJsApplication();
 
     options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
     options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
@@ -68,7 +68,7 @@ class PDFViewer {
   };
 
   private render = async (documentParams: OpenDocumentParams): Promise<void> => {
-    const pdfjsApp = await this.pdfJsApplication();
+    const pdfjsApp = this.pdfJsApplication();
 
     try {
       await pdfjsApp.open(documentParams);
@@ -84,6 +84,9 @@ class PDFViewer {
 
     const iframe = document.createElement("iframe") as HTMLIFrameElement;
     iframe.id = this.iframeId = `${this.container.id}-iframe`;
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.border = "none";
     this.container.appendChild(iframe);
 
     const iframeWindow = iframe.contentWindow;
@@ -100,7 +103,7 @@ class PDFViewer {
   };
 
   private loadStyles = (document: Document): void => {
-    const stylesElement = document.createElement('style');
+    const stylesElement = document.createElement("style");
     stylesElement.textContent = pdfjsStyles;
     document.head.appendChild(stylesElement);
   };
@@ -115,28 +118,21 @@ class PDFViewer {
     });
   };
 
-  private pdfJsApplication = (): Promise<PDFViewerApplication> => {
-    return new Promise<PDFViewerApplication>(
-      (resolve) => {
-        setTimeout(() => {
-          const viewerContainer = document.getElementById(this.iframeId) as HTMLIFrameElement;
+  private pdfJsApplication = (): PDFViewerApplication => {
+    const viewerContainer = document.getElementById(this.iframeId) as HTMLIFrameElement;
 
-          if (!viewerContainer) {
-            throw new Error(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" not found.`);
-          }
+    if (!viewerContainer) {
+      throw new Error(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" not found.`);
+    }
 
-          const viewerWindow = viewerContainer.contentWindow as IframeWindow;
+    const viewerWindow = viewerContainer.contentWindow as IframeWindow;
 
-          if (!viewerWindow) {
-            throw new Error(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" is corrupted.`);
-          }
+    if (!viewerWindow) {
+      throw new Error(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" is corrupted.`);
+    }
 
-          resolve(viewerWindow.PDFViewerApplication);
-        }, 200);
-      }
-    );
+    return viewerWindow.PDFViewerApplication;
   };
 }
 
-window.PDFViewer = PDFViewer;
 export { PDFViewerParams, PDFViewerOptions, PDFViewer };

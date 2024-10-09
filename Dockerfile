@@ -33,6 +33,4 @@ RUN rm build/generic/web/debugger.css
 # export result
 FROM scratch AS export-stage
 COPY --from=build-stage /pdf.js/build/generic/web/viewer.* /src/
-COPY --from=build-stage /pdf.js/build/generic/web/cmaps/ /dist/cmaps/
-COPY --from=build-stage /pdf.js/build/generic/web/standard_fonts/ /dist/standard_fonts/
-COPY --from=build-stage /pdf.js/build/minified/build /dist/
+COPY --from=build-stage /pdf.js/build/minified/build /src/

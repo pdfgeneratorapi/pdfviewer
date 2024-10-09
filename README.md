@@ -1,4 +1,4 @@
-# PDF viewer by PDF Generator API
+# PDF Viewer by PDF Generator API
 
 [PDFViewer](http://pdfviewer.com/) is a library to display and interact with PDF documents in web applications,
 offering features such as document loading via URL and base64 encoded strings.
@@ -26,6 +26,7 @@ offering features such as document loading via URL and base64 encoded strings.
 ### ECMAScript module
 
 ```javascript
+
 import { PDFViewer } from "pdf-generator-api-pdfviewer";
 
 const viewer = new PDFViewer({
@@ -38,7 +39,7 @@ viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/exampl
 ### CommonJS
 
 ```javascript
-const PDFViewer = require("pdf-generator-api-pdfviewer");
+const { PDFViewer } = require("pdf-generator-api-pdfviewer");
 
 const viewer = new PDFViewer({
   container: document.getElementById("viewer-container"),
@@ -47,27 +48,19 @@ const viewer = new PDFViewer({
 viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
 ```
 
-### Inline
+### CDN
 
 ```html
-<div id="viewer-container"></div>
-<script src="https://www.unpkg.com/pdf-generator-api-pdfviewer/dist/PDFViewer.iife.js"></script>
+<div id="id"></div>
+<script src="https://unpkg.com/pdf-generator-api-pdfviewer@latest/dist/PDFViewer.iife.js"></script>
 <script>
-    const viewer = new PDFViewer({
-        container: document.getElementById("viewer-container"),
-    });
+  const { PDFViewer } = PDFGeneratorApi;
 
-    viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
-</script>
-```
-```html
-<script type="module" src="https://www.unpkg.com/pdf-generator-api-pdfviewer/dist/PDFViewer.mjs"></script>
-<script>
-    const viewer = new PDFViewer({
-        container: document.getElementById("viewer-container"),
-    });
+  const viewer = new PDFViewer({
+    container: document.getElementById("id"),
+  });
 
-    viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
+  viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
 </script>
 ```
 
@@ -128,6 +121,24 @@ viewer.setOptions({
   upload: true,
 });
 ```
+
+## Examples
+Refer to https://github.com/pdfgeneratorapi/pdfviewer/examples for examples.
+
+ * [Webpack](https://github.com/pdfgeneratorapi/pdfviewer/examples/webpack)
+ * [Esbuild](https://github.com/pdfgeneratorapi/pdfviewer/examples/esbuild)
+ * [Rollup](https://github.com/pdfgeneratorapi/pdfviewer/examples/rollup)
+ * [Parcel](https://github.com/pdfgeneratorapi/pdfviewer/examples/parcel)
+ * [Browserify](https://github.com/pdfgeneratorapi/pdfviewer/examples/browserify)
+
+## Building PDF Viewer
+
+To apply customization changes and build the library, run:
+
+    $ npm run build
+
+
+This will compile minified files in the `dist` directory.
 
 ## Contributing
 

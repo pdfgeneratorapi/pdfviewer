@@ -2,7 +2,7 @@
   "name": "pdf-generator-api-pdfviewer",
   "author": "PDF Generator API",
   "repository": "pdfgeneratorapi/pdfviewer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "PDF viewer by PDF Generator API",
   "main": "./dist/PDFViewer.cjs",
   "module": "./dist/PDFViewer.mjs",
@@ -20,7 +20,12 @@
   "files": [
     "dist"
   ],
-  "keywords": [],
+  "keywords": [
+    "pdf",
+    "pdfjs",
+    "pdf viewer",
+    "pdf lib"
+  ],
   "license": "MIT",
   "devDependencies": {
     "tsup": "^8.3.0",

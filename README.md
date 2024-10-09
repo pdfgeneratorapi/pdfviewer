@@ -123,13 +123,13 @@ viewer.setOptions({
 ```
 
 ## Examples
-Refer to https://github.com/pdfgeneratorapi/pdfviewer/examples for examples.
+Complete code examples can be found in the [examples folder](https://github.com/pdfgeneratorapi/pdfviewer/tree/main/examples).
 
- * [Webpack](https://github.com/pdfgeneratorapi/pdfviewer/examples/webpack)
- * [Esbuild](https://github.com/pdfgeneratorapi/pdfviewer/examples/esbuild)
- * [Rollup](https://github.com/pdfgeneratorapi/pdfviewer/examples/rollup)
- * [Parcel](https://github.com/pdfgeneratorapi/pdfviewer/examples/parcel)
- * [Browserify](https://github.com/pdfgeneratorapi/pdfviewer/examples/browserify)
+ * [Webpack](https://github.com/pdfgeneratorapi/pdfviewer/tree/main/examples/webpack)
+ * [Esbuild](https://github.com/pdfgeneratorapi/pdfviewer/tree/main/examples/esbuild)
+ * [Rollup](https://github.com/pdfgeneratorapi/pdfviewer/tree/main/examples/rollup)
+ * [Parcel](https://github.com/pdfgeneratorapi/pdfviewer/tree/main/examples/parcel)
+ * [Browserify](https://github.com/pdfgeneratorapi/pdfviewer/tree/main/examples/browserify)
 
 ## Building PDF Viewer
 

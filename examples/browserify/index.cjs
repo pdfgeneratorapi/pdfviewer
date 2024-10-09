@@ -1,4 +1,4 @@
-import { PDFViewer } from "../../dist/PDFViewer.mjs";
+const { PDFViewer } = require("pdf-generator-api-pdfviewer");
 
 const viewer = new PDFViewer({
   container: document.getElementById("container"),

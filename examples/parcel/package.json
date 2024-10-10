@@ -1,0 +1,11 @@
+{
+  "name": "pdfviewer-parcel-example",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "parcel build ./index.js --dist-dir dist"
+  },
+  "devDependencies": {
+    "parcel": "^2.12.0",
+    "pdf-generator-api-pdfviewer": "^1.0.0"
+  }
+}

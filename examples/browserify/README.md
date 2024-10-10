@@ -1,4 +1,4 @@
-## Adding PDF Viewer with Webpack
+## Adding PDF Viewer with Browserify
 
 Install the example dependencies and build the project:
 

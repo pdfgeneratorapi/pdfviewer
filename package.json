@@ -2,13 +2,14 @@
   "name": "pdf-generator-api-pdfviewer",
   "author": "PDF Generator API",
   "repository": "pdfgeneratorapi/pdfviewer",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "PDF viewer by PDF Generator API",
   "main": "./dist/PDFViewer.cjs",
   "module": "./dist/PDFViewer.mjs",
   "types": "./dist/PDFViewer.d.ts",
   "scripts": {
     "build": "tsup",
+    "watch": "tsup --watch",
     "build:docker": "docker build . --output ."
   },
   "exports": {

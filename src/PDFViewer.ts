@@ -9,7 +9,14 @@ interface PDFViewerParams {
   options?: PDFViewerOptions | undefined;
 }
 
+enum PDFViewerThemes {
+  Light = "light",
+  Dark = "dark",
+  PDFApi = "pdfapi",
+}
+
 interface PDFViewerOptions {
+  readonly theme: PDFViewerThemes;
   readonly print: boolean;
   readonly download: boolean;
   readonly upload: boolean;
@@ -22,6 +29,7 @@ interface OpenDocumentParams {
 
 interface PDFViewerApplication {
   open(params: OpenDocumentParams): Promise<void>;
+  setTheme(theme: PDFViewerThemes): void;
   enablePrinting(): void;
   disablePrinting(): void;
   enableDownloading(): void;
@@ -37,6 +45,14 @@ interface IframeWindow extends Window {
 
 class PDFViewer {
   private readonly container: HTMLElement;
+
+  private options: PDFViewerOptions = {
+    theme: PDFViewerThemes.PDFApi,
+    print: true,
+    download: true,
+    upload: true,
+  };
+
   protected iframeId: string = "";
 
   constructor(params: PDFViewerParams) {
@@ -49,11 +65,7 @@ class PDFViewer {
   }
 
   public setOptions = (options: PDFViewerOptions): void => {
-    const pdfjsApp = this.pdfJsApplication();
-
-    options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
-    options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
-    options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();
+    this.options = { ...this.options, ...options };
   };
 
   public loadUrl = async (url: string): Promise<void> => {
@@ -69,6 +81,14 @@ class PDFViewer {
 
   private render = async (documentParams: OpenDocumentParams): Promise<void> => {
     const pdfjsApp = this.pdfJsApplication();
+
+    if (this.options.theme) {
+      pdfjsApp.setTheme(this.options.theme);
+    }
+
+    this.options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
+    this.options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
+    this.options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();
 
     try {
       await pdfjsApp.open(documentParams);
@@ -135,4 +155,4 @@ class PDFViewer {
   };
 }
 
-export { PDFViewerParams, PDFViewerOptions, PDFViewer };
+export { PDFViewerParams, PDFViewerOptions, PDFViewerThemes, PDFViewer };

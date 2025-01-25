@@ -104,18 +104,20 @@ viewer.loadBase64(base64encodedPdf);
 ```
 
 ## Available options
+- **Theme**: PDFViewerThemeOptions
 - **Print**: boolean
 - **Download**: boolean
 - **Upload**: boolean
 
 ```typescript
-import { PDFViewer } from "pdf-generator-api-pdfviewer";
+import { PDFViewer, PDFViewerThemes } from "pdf-generator-api-pdfviewer";
 
 const viewer = new PDFViewer({
   container: document.getElementById("viewer-container") as HTMLElement,
 })
 
 viewer.setOptions({
+  theme: PDFViewerThemes.Light,
   print: true,
   download: true,
   upload: true,

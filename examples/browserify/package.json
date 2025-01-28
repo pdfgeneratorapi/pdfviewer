@@ -1,12 +1,11 @@
 {
   "name": "pdfviewer-browserify-example",
-  "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
     "build": "browserify ./index.cjs -o dist/bundle.js"
   },
   "devDependencies": {
     "browserify": "^17.0.1",
-    "pdf-generator-api-pdfviewer": "^1.0.0"
+    "pdf-generator-api-pdfviewer": "../../"
   }
 }

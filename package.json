@@ -2,7 +2,7 @@
   "name": "pdf-generator-api-pdfviewer",
   "author": "PDF Generator API",
   "repository": "pdfgeneratorapi/pdfviewer",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "PDF viewer by PDF Generator API",
   "main": "./dist/PDFViewer.cjs",
   "module": "./dist/PDFViewer.mjs",

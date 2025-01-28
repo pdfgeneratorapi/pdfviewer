@@ -1,6 +1,5 @@
 {
   "name": "pdfviewer-esbuild-example",
-  "version": "1.0.0",
   "scripts": {
     "build": "esbuild ./index.ts --bundle --minify --sourcemap --outfile=dist/bundle.js",
     "build:cjs": "esbuild ./index.cjs --bundle --minify --sourcemap --outfile=dist/bundle.js",
@@ -9,6 +8,6 @@
   },
   "devDependencies": {
     "esbuild": "^0.24.0",
-    "pdf-generator-api-pdfviewer": "^1.0.0"
+    "pdf-generator-api-pdfviewer": "../../"
   }
 }

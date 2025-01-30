@@ -1,13 +1,12 @@
 {
   "name": "pdfviewer-rollup-example",
-  "version": "1.0.0",
   "scripts": {
     "build": "rollup -c"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-typescript": "^12.1.0",
-    "pdf-generator-api-pdfviewer": "^1.0.0",
+    "pdf-generator-api-pdfviewer": "../../",
     "rollup": "^4.24.0",
     "tslib": "^2.7.0"
   }

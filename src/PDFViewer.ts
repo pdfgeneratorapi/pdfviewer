@@ -46,28 +46,49 @@ interface IframeWindow extends Window {
 class PDFViewer {
   private readonly container: HTMLElement;
 
+  /**
+   * Default settings
+   */
   private options: PDFViewerOptions = {
-    theme: PDFViewerThemes.PDFApi,
+    theme: PDFViewerThemes.Light,
     print: true,
     download: true,
     upload: true,
   };
 
+  /**
+   * Iframe window internal ID
+   */
   protected iframeId: string = "";
 
   constructor(params: PDFViewerParams) {
     this.container = params.container;
-    this.initUI();
 
     if (params.options) {
       this.setOptions(params.options);
     }
+
+    try {
+      this.initUI();
+    } catch (error) {
+      console.error(`PDFViewer initialization error: ${error}`);
+    }
   }
 
+  /**
+   * Sets application settings
+   *
+   * @param options - PDFViewerOptions
+   */
   public setOptions = (options: PDFViewerOptions): void => {
     this.options = { ...this.options, ...options };
   };
 
+  /**
+   * Loads a document via a URL
+   *
+   * @param url - string
+   */
   public loadUrl = async (url: string): Promise<void> => {
     const response = await fetch(url);
     const blob = await response.blob();
@@ -75,20 +96,22 @@ class PDFViewer {
     await this.render({ url: URL.createObjectURL(blob) });
   };
 
+  /**
+   * Loads a document that is base64 encoded
+   *
+   * @param encodedPdf
+   */
   public loadBase64 = async (encodedPdf: string): Promise<void> => {
     await this.render({ data: window.atob(encodedPdf) });
   };
 
+  /**
+   * Renders a PDF document using the PDF.js API
+   *
+   * @param documentParams
+   */
   private render = async (documentParams: OpenDocumentParams): Promise<void> => {
-    const pdfjsApp = this.pdfJsApplication();
-
-    if (this.options.theme) {
-      pdfjsApp.setTheme(this.options.theme);
-    }
-
-    this.options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
-    this.options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
-    this.options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();
+    const pdfjsApp = await this.pdfJsApplication();
 
     try {
       await pdfjsApp.open(documentParams);
@@ -97,6 +120,24 @@ class PDFViewer {
     }
   };
 
+  /**
+   * Applies global settings
+   */
+  private applyOptions = async (): Promise<void> => {
+    const pdfjsApp = await this.pdfJsApplication();
+
+    if (this.options.theme) {
+      pdfjsApp.setTheme(this.options.theme);
+    }
+
+    this.options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
+    this.options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
+    this.options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();
+  }
+
+  /**
+   * UI initialization
+   */
   private initUI = (): void => {
     if (!(this.container instanceof Element)) {
       throw new Error(`PDFViewer error: Wrong iframe container. Example: document.getElementById("#id").`);
@@ -120,16 +161,30 @@ class PDFViewer {
       this.loadStyles(iframeDocument);
       this.loadScripts(iframeDocument);
     }
+
+    iframe.addEventListener("load", async () => {
+      await this.applyOptions();
+    });
   };
 
+  /**
+   * Style loader
+   *
+   * @param document - Document
+   */
   private loadStyles = (document: Document): void => {
     const stylesElement = document.createElement("style");
     stylesElement.textContent = pdfjsStyles;
     document.head.appendChild(stylesElement);
   };
 
+  /**
+   * Script loader
+   *
+   * @param document - Document
+   */
   private loadScripts = (document: Document): void => {
-    [pdfjsLib, pdfjsWorker, pdfjsViewer].forEach((script) => {
+    [pdfjsLib, pdfjsWorker, pdfjsViewer].forEach((script, key) => {
       const scriptElement: HTMLScriptElement = document.createElement("script");
       scriptElement.type = "module";
       scriptElement.defer = true;
@@ -138,20 +193,25 @@ class PDFViewer {
     });
   };
 
-  private pdfJsApplication = (): PDFViewerApplication => {
-    const viewerContainer = document.getElementById(this.iframeId) as HTMLIFrameElement;
+  /**
+   * Returns PDF.js application
+   */
+  private pdfJsApplication = async (): Promise<PDFViewerApplication> => {
+    return new Promise((resolve, reject) => {
+      const viewerContainer = document.getElementById(this.iframeId) as HTMLIFrameElement;
 
-    if (!viewerContainer) {
-      throw new Error(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" not found.`);
-    }
+      if (!viewerContainer) {
+        reject(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" not found.`);
+      }
 
-    const viewerWindow = viewerContainer.contentWindow as IframeWindow;
+      const viewerWindow = viewerContainer.contentWindow as IframeWindow;
 
-    if (!viewerWindow) {
-      throw new Error(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" is corrupted.`);
-    }
+      if (!viewerWindow) {
+        reject(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" is corrupted.`);
+      }
 
-    return viewerWindow.PDFViewerApplication;
+      resolve(viewerWindow.PDFViewerApplication);
+    });
   };
 }
 

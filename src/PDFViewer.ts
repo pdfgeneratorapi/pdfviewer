@@ -9,14 +9,39 @@ interface PDFViewerParams {
   options?: PDFViewerOptions | undefined;
 }
 
-enum PDFViewerThemes {
+enum Theme {
   Light = "light",
   Dark = "dark",
   PDFApi = "pdfapi",
 }
 
+enum Scale {
+  AutomaticZoom = "auto",
+  ActualSize = "page-actual",
+  PageFit = "page-fit",
+  PageWidth = "page-width",
+}
+
+type ToolbarIconSize = 16 | 24 | 32 | 48;
+type ToolbarFontSize = NumericRange<10, 24>;
+
+type NumericRange<
+  Start extends number,
+  End extends number,
+  Arr extends unknown[] = [],
+  Acc extends number = never
+> = Arr['length'] extends End
+  ? Acc | Start | End
+  : NumericRange<Start, End, [...Arr, 1], Arr[Start] extends undefined ? Acc : Acc | Arr['length']>
+
+
 interface PDFViewerOptions {
-  readonly theme: PDFViewerThemes;
+  readonly theme: Theme;
+  readonly initialScale: Scale | number;
+  readonly toolbarFontSize: ToolbarFontSize;
+  readonly toolbarIconSize: ToolbarIconSize;
+  readonly scaleDropdown: boolean;
+  readonly search: boolean;
   readonly print: boolean;
   readonly download: boolean;
   readonly upload: boolean;
@@ -29,7 +54,14 @@ interface OpenDocumentParams {
 
 interface PDFViewerApplication {
   open(params: OpenDocumentParams): Promise<void>;
-  setTheme(theme: PDFViewerThemes): void;
+  setTheme(theme: Theme): void;
+  setInitialScale(scale: Scale | number): void;
+  setToolbarFontSize(fontSize: ToolbarFontSize): void;
+  setToolbarIconSize(iconSize: ToolbarIconSize): void;
+  showScaleDropdown(): void;
+  hideScaleDropdown(): void;
+  enableTextSearch(): void;
+  disableTextSearch(): void;
   enablePrinting(): void;
   disablePrinting(): void;
   enableDownloading(): void;
@@ -50,7 +82,12 @@ class PDFViewer {
    * Default settings
    */
   private options: PDFViewerOptions = {
-    theme: PDFViewerThemes.Light,
+    theme: Theme.Light,
+    initialScale: Scale.PageFit,
+    toolbarFontSize: 16,
+    toolbarIconSize: 24,
+    scaleDropdown: true,
+    search: true,
     print: true,
     download: true,
     upload: true,
@@ -118,6 +155,10 @@ class PDFViewer {
     } catch (error) {
       throw new Error(`PDFViewer error: PDF document can not be loaded - ${error}`);
     }
+
+    setTimeout(() => {
+      pdfjsApp.setInitialScale(this.options.initialScale);
+    });
   };
 
   /**
@@ -126,14 +167,18 @@ class PDFViewer {
   private applyOptions = async (): Promise<void> => {
     const pdfjsApp = await this.pdfJsApplication();
 
-    if (this.options.theme) {
-      pdfjsApp.setTheme(this.options.theme);
-    }
+    pdfjsApp.setTheme(this.options.theme);
+    pdfjsApp.setInitialScale(this.options.initialScale);
+    pdfjsApp.setToolbarFontSize(this.options.toolbarFontSize);
+    pdfjsApp.setToolbarIconSize(this.options.toolbarIconSize);
 
+    this.options.scaleDropdown ? pdfjsApp.showScaleDropdown() : pdfjsApp.hideScaleDropdown();
+    this.options.search ? pdfjsApp.enableTextSearch() : pdfjsApp.disableTextSearch();
     this.options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
     this.options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
     this.options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();
   }
+
 
   /**
    * UI initialization
@@ -215,4 +260,4 @@ class PDFViewer {
   };
 }
 
-export { PDFViewerParams, PDFViewerOptions, PDFViewerThemes, PDFViewer };
+export { PDFViewer, PDFViewerOptions, PDFViewerParams, Scale, Theme, ToolbarFontSize, ToolbarIconSize };

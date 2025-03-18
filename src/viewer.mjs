@@ -5933,9 +5933,8 @@ class PDFFindController {
 
 const MATCHES_COUNT_LIMIT = 1000;
 class PDFFindBar {
-  #mainContainer;
   #resizeObserver = new ResizeObserver(this.#resizeObserverCallback.bind(this));
-  constructor(options, mainContainer, eventBus) {
+  constructor(options, eventBus) {
     this.opened = false;
     this.bar = options.bar;
     this.toggleButton = options.toggleButton;
@@ -5949,7 +5948,6 @@ class PDFFindBar {
     this.findPreviousButton = options.findPreviousButton;
     this.findNextButton = options.findNextButton;
     this.eventBus = eventBus;
-    this.#mainContainer = mainContainer;
     const checkedInputs = new Map([[this.highlightAll, "highlightallchange"], [this.caseSensitive, "casesensitivitychange"], [this.entireWord, "entirewordchange"], [this.matchDiacritics, "diacriticmatchingchange"]]);
     this.toggleButton.addEventListener("click", () => {
       this.toggle();
@@ -6057,7 +6055,7 @@ class PDFFindBar {
   }
   open() {
     if (!this.opened) {
-      this.#resizeObserver.observe(this.#mainContainer);
+      this.#resizeObserver.observe(this.bar.parentNode);
       this.#resizeObserver.observe(this.bar);
       this.opened = true;
       toggleExpandedBtn(this.toggleButton, true, this.bar);
@@ -10886,7 +10884,7 @@ class PDFViewer {
   #supportsPinchToZoom = true;
   #textLayerMode = TextLayerMode.ENABLE;
   constructor(options) {
-    const viewerVersion = "5.0.49";
+    const viewerVersion = "5.0.56";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -12406,16 +12404,11 @@ class PDFViewer {
 
 ;//./secondary_toolbar.js
 
-
 class SecondaryToolbar {
   #opts;
   constructor(options, eventBus) {
     this.#opts = options;
     const buttons = [{
-      element: options.presentationModeButton,
-      eventName: "presentationmode",
-      close: true
-    }, {
       element: options.printButton,
       eventName: "print",
       close: true
@@ -12424,102 +12417,10 @@ class SecondaryToolbar {
       eventName: "download",
       close: true
     }, {
-      element: options.viewBookmarkButton,
-      eventName: null,
-      close: true
-    }, {
-      element: options.firstPageButton,
-      eventName: "firstpage",
-      close: true
-    }, {
-      element: options.lastPageButton,
-      eventName: "lastpage",
-      close: true
-    }, {
-      element: options.pageRotateCwButton,
-      eventName: "rotatecw",
-      close: false
-    }, {
-      element: options.pageRotateCcwButton,
-      eventName: "rotateccw",
-      close: false
-    }, {
-      element: options.cursorSelectToolButton,
-      eventName: "switchcursortool",
-      eventDetails: {
-        tool: CursorTool.SELECT
-      },
-      close: true
-    }, {
-      element: options.cursorHandToolButton,
-      eventName: "switchcursortool",
-      eventDetails: {
-        tool: CursorTool.HAND
-      },
-      close: true
-    }, {
-      element: options.scrollPageButton,
-      eventName: "switchscrollmode",
-      eventDetails: {
-        mode: ScrollMode.PAGE
-      },
-      close: true
-    }, {
-      element: options.scrollVerticalButton,
-      eventName: "switchscrollmode",
-      eventDetails: {
-        mode: ScrollMode.VERTICAL
-      },
-      close: true
-    }, {
-      element: options.scrollHorizontalButton,
-      eventName: "switchscrollmode",
-      eventDetails: {
-        mode: ScrollMode.HORIZONTAL
-      },
-      close: true
-    }, {
-      element: options.scrollWrappedButton,
-      eventName: "switchscrollmode",
-      eventDetails: {
-        mode: ScrollMode.WRAPPED
-      },
-      close: true
-    }, {
-      element: options.spreadNoneButton,
-      eventName: "switchspreadmode",
-      eventDetails: {
-        mode: SpreadMode.NONE
-      },
-      close: true
-    }, {
-      element: options.spreadOddButton,
-      eventName: "switchspreadmode",
-      eventDetails: {
-        mode: SpreadMode.ODD
-      },
-      close: true
-    }, {
-      element: options.spreadEvenButton,
-      eventName: "switchspreadmode",
-      eventDetails: {
-        mode: SpreadMode.EVEN
-      },
-      close: true
-    }, {
-      element: options.imageAltTextSettingsButton,
-      eventName: "imagealttextsettings",
-      close: true
-    }, {
-      element: options.documentPropertiesButton,
-      eventName: "documentproperties",
+      element: options.uploadButton,
+      eventName: "upload",
       close: true
     }];
-    buttons.push({
-      element: options.openFileButton,
-      eventName: "openfile",
-      close: true
-    });
     this.eventBus = eventBus;
     this.opened = false;
     this.#bindListeners(buttons);
@@ -12530,38 +12431,17 @@ class SecondaryToolbar {
   }
   setPageNumber(pageNumber) {
     this.pageNumber = pageNumber;
-    this.#updateUIState();
   }
   setPagesCount(pagesCount) {
     this.pagesCount = pagesCount;
-    this.#updateUIState();
   }
   reset() {
     this.pageNumber = 0;
     this.pagesCount = 0;
-    this.#updateUIState();
     this.eventBus.dispatch("switchcursortool", {
       source: this,
       reset: true
     });
-    this.#scrollModeChanged({
-      mode: ScrollMode.VERTICAL
-    });
-    this.#spreadModeChanged({
-      mode: SpreadMode.NONE
-    });
-  }
-  #updateUIState() {
-    const {
-      firstPageButton,
-      lastPageButton,
-      pageRotateCwButton,
-      pageRotateCcwButton
-    } = this.#opts;
-    firstPageButton.disabled = this.pageNumber <= 1;
-    lastPageButton.disabled = this.pageNumber >= this.pagesCount;
-    pageRotateCwButton.disabled = this.pagesCount === 0;
-    pageRotateCcwButton.disabled = this.pagesCount === 0;
   }
   #bindListeners(buttons) {
     const {
@@ -12598,60 +12478,6 @@ class SecondaryToolbar {
         });
       });
     }
-    eventBus._on("cursortoolchanged", this.#cursorToolChanged.bind(this));
-    eventBus._on("scrollmodechanged", this.#scrollModeChanged.bind(this));
-    eventBus._on("spreadmodechanged", this.#spreadModeChanged.bind(this));
-  }
-  #cursorToolChanged({
-    tool,
-    disabled
-  }) {
-    const {
-      cursorSelectToolButton,
-      cursorHandToolButton
-    } = this.#opts;
-    toggleCheckedBtn(cursorSelectToolButton, tool === CursorTool.SELECT);
-    toggleCheckedBtn(cursorHandToolButton, tool === CursorTool.HAND);
-    cursorSelectToolButton.disabled = disabled;
-    cursorHandToolButton.disabled = disabled;
-  }
-  #scrollModeChanged({
-    mode
-  }) {
-    const {
-      scrollPageButton,
-      scrollVerticalButton,
-      scrollHorizontalButton,
-      scrollWrappedButton,
-      spreadNoneButton,
-      spreadOddButton,
-      spreadEvenButton
-    } = this.#opts;
-    toggleCheckedBtn(scrollPageButton, mode === ScrollMode.PAGE);
-    toggleCheckedBtn(scrollVerticalButton, mode === ScrollMode.VERTICAL);
-    toggleCheckedBtn(scrollHorizontalButton, mode === ScrollMode.HORIZONTAL);
-    toggleCheckedBtn(scrollWrappedButton, mode === ScrollMode.WRAPPED);
-    const forceScrollModePage = this.pagesCount > PagesCountLimit.FORCE_SCROLL_MODE_PAGE;
-    scrollPageButton.disabled = forceScrollModePage;
-    scrollVerticalButton.disabled = forceScrollModePage;
-    scrollHorizontalButton.disabled = forceScrollModePage;
-    scrollWrappedButton.disabled = forceScrollModePage;
-    const isHorizontal = mode === ScrollMode.HORIZONTAL;
-    spreadNoneButton.disabled = isHorizontal;
-    spreadOddButton.disabled = isHorizontal;
-    spreadEvenButton.disabled = isHorizontal;
-  }
-  #spreadModeChanged({
-    mode
-  }) {
-    const {
-      spreadNoneButton,
-      spreadOddButton,
-      spreadEvenButton
-    } = this.#opts;
-    toggleCheckedBtn(spreadNoneButton, mode === SpreadMode.NONE);
-    toggleCheckedBtn(spreadOddButton, mode === SpreadMode.ODD);
-    toggleCheckedBtn(spreadEvenButton, mode === SpreadMode.EVEN);
   }
   open() {
     if (this.opened) {
@@ -12692,6 +12518,7 @@ class Toolbar {
   constructor(options, eventBus, toolbarDensity = 0) {
     this.#opts = options;
     this.eventBus = eventBus;
+    this.textSearch = true;
     this.printing = true;
     this.downloading = true;
     this.uploading = true;
@@ -13148,6 +12975,9 @@ const PDFViewerApplication = {
   _isCtrlKeyDown: false,
   _caretBrowsing: null,
   _isScrolling: false,
+  _smallScreenResolution: 560,
+  _maximumFontSize: 24,
+  _iconSizes: [16, 24, 32, 48],
   async initialize(appConfig) {
     this.appConfig = appConfig;
     try {
@@ -13176,7 +13006,11 @@ const PDFViewerApplication = {
     if (this.isViewerEmbedded && AppOptions.get("externalLinkTarget") === LinkTarget.NONE) {
       AppOptions.set("externalLinkTarget", LinkTarget.TOP);
     }
-    AppOptions.set("sidebarViewOnLoad", SidebarView.THUMBS);
+    if (window.innerWidth >= this._smallScreenResolution) {
+      AppOptions.set("sidebarViewOnLoad", SidebarView.THUMBS);
+    } else {
+      AppOptions.set("sidebarViewOnLoad", SidebarView.NONE);
+    }
     await this._initializeViewerComponents();
     this.bindEvents();
     this.bindWindowEvents();
@@ -13500,6 +13334,9 @@ const PDFViewerApplication = {
         console.warn(msg);
       });
     }
+    if (!this.supportsTextSearch) {
+      appConfig.findBar = undefined;
+    }
     if (!this.supportsPrinting) {
       appConfig.toolbar?.print?.classList.add("hidden");
       appConfig.secondaryToolbar?.printButton.classList.add("hidden");
@@ -13512,7 +13349,7 @@ const PDFViewerApplication = {
       appConfig.toolbar?.upload?.classList.add("hidden");
     }
     if (!this.supportsFullscreen) {
-      appConfig.secondaryToolbar?.presentationModeButton.classList.add("hidden");
+      appConfig.secondaryToolbar?.presentationModeButton?.classList.add("hidden");
     }
     if (this.supportsIntegratedFind) {
       appConfig.findBar?.toggleButton?.classList.add("hidden");
@@ -13572,6 +13409,42 @@ const PDFViewerApplication = {
     }
     document.documentElement.classList.add(themeClass);
   },
+  setToolbarFontSize(fontSize) {
+    if (fontSize <= this._maximumFontSize) {
+      this.appConfig.toolbar.container.style.fontSize = `${fontSize}px`;
+    }
+  },
+  setToolbarIconSize(iconSize) {
+    if (this._iconSizes.includes(iconSize)) {
+      const iconElements = document.getElementsByClassName("icon");
+      for (const iconElement of iconElements) {
+        for (const initialSize of this._iconSizes) {
+          iconElement.classList.remove(`icon-size-${initialSize}`);
+        }
+        iconElement.classList.add(`icon-size-${iconSize}`);
+      }
+    }
+  },
+  setInitialScale(scaleValue) {
+    this.toolbar?.setPageScale(scaleValue, scaleValue);
+    this.pdfViewer.currentScaleValue = scaleValue;
+  },
+  showScaleDropdown() {
+    this.appConfig.toolbar?.scaleSelect?.classList.remove("hidden");
+    this.appConfig.toolbar?.scaleSelect?.parentElement.classList.remove("hidden");
+  },
+  hideScaleDropdown() {
+    this.appConfig.toolbar?.scaleSelect?.classList.add("hidden");
+    this.appConfig.toolbar?.scaleSelect?.parentElement.classList.add("hidden");
+  },
+  enableTextSearch() {
+    this.toolbar.textSearch = true;
+    this.findBar.toggleButton?.classList.remove("hidden");
+  },
+  disableTextSearch() {
+    this.toolbar.textSearch = false;
+    this.findBar.toggleButton?.classList.add("hidden");
+  },
   enablePrinting() {
     this.toolbar.printing = true;
     this.appConfig.toolbar?.print?.classList.remove("hidden");
@@ -13595,10 +13468,12 @@ const PDFViewerApplication = {
   enableUploading() {
     this.toolbar.uploading = true;
     this.appConfig.toolbar?.upload?.classList.remove("hidden");
+    this.appConfig.secondaryToolbar?.uploadButton.classList.remove("hidden");
   },
   disableUploading() {
     this.toolbar.uploading = false;
     this.appConfig.toolbar?.upload?.classList.add("hidden");
+    this.appConfig.secondaryToolbar?.uploadButton.classList.add("hidden");
   },
   get pagesCount() {
     return this.pdfDocument ? this.pdfDocument.numPages : 0;
@@ -13608,6 +13483,9 @@ const PDFViewerApplication = {
   },
   set page(val) {
     this.pdfViewer.currentPageNumber = val;
+  },
+  get supportsTextSearch() {
+    return this.toolbar.textSearch === true;
   },
   get supportsPrinting() {
     return PDFPrintServiceFactory.supportsPrinting && this.toolbar.printing === true;
@@ -13677,8 +13555,8 @@ const PDFViewerApplication = {
     const {
       secondaryToolbar
     } = this.appConfig;
-    secondaryToolbar?.viewBookmarkButton.classList.add("hidden");
-    if (secondaryToolbar?.presentationModeButton.classList.contains("hidden")) {
+    secondaryToolbar?.viewBookmarkButton?.classList.add("hidden");
+    if (secondaryToolbar?.presentationModeButton?.classList.contains("hidden")) {
       document.getElementById("viewBookmarkSeparator")?.classList.add("hidden");
     }
   },
@@ -14713,7 +14591,7 @@ function onNamedAction(evt) {
       this.appConfig.toolbar?.pageNumber.select();
       break;
     case "Find":
-      if (!this.supportsIntegratedFind) {
+      if (!this.supportsIntegratedFind && this.supportsTextSearch) {
         this.findBar?.toggle();
       }
       break;
@@ -14745,7 +14623,7 @@ function onUpdateViewarea({
       rotation: location.rotation
     }).catch(() => {});
   }
-  if (this.appConfig.secondaryToolbar) {
+  if (this.appConfig.secondaryToolbar.viewBookmarkButton) {
     this.appConfig.secondaryToolbar.viewBookmarkButton.href = this.pdfLinkService.getAnchorUrl(location.pdfOpenParams);
   }
 }
@@ -14765,6 +14643,12 @@ function onResize() {
   }
   if (!pdfDocument) {
     return;
+  }
+  if (this.findBar.opened) {
+    this.findBar.close();
+  }
+  if (this.secondaryToolbar.opened) {
+    this.secondaryToolbar.close();
   }
   const currentScaleValue = pdfViewer.currentScaleValue;
   if (currentScaleValue === "auto" || currentScaleValue === "page-fit" || currentScaleValue === "page-width") {
@@ -15033,7 +14917,7 @@ function onKeyDown(evt) {
   if (cmd === 1 || cmd === 8 || cmd === 5 || cmd === 12) {
     switch (evt.keyCode) {
       case 70:
-        if (!this.supportsIntegratedFind && !evt.shiftKey) {
+        if (!this.supportsIntegratedFind && !evt.shiftKey && this.supportsTextSearch) {
           this.findBar?.open();
           handled = true;
         }
@@ -15302,8 +15186,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.0.49";
-const pdfjsBuild = "32950272f";
+const pdfjsVersion = "5.0.56";
+const pdfjsBuild = "f725c4f90";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,
@@ -15344,27 +15228,28 @@ function getViewerConfiguration() {
     secondaryToolbar: {
       toolbar: document.getElementById("secondaryToolbar"),
       toggleButton: document.getElementById("secondaryToolbarToggle"),
-      presentationModeButton: document.getElementById("presentationMode"),
-      openFileButton: document.getElementById("secondaryOpenFile"),
+      presentationModeButton: null,
+      openFileButton: null,
       printButton: document.getElementById("secondaryPrint"),
       downloadButton: document.getElementById("secondaryDownload"),
-      viewBookmarkButton: document.getElementById("viewBookmark"),
-      firstPageButton: document.getElementById("firstPage"),
-      lastPageButton: document.getElementById("lastPage"),
-      pageRotateCwButton: document.getElementById("pageRotateCw"),
-      pageRotateCcwButton: document.getElementById("pageRotateCcw"),
-      cursorSelectToolButton: document.getElementById("cursorSelectTool"),
-      cursorHandToolButton: document.getElementById("cursorHandTool"),
-      scrollPageButton: document.getElementById("scrollPage"),
-      scrollVerticalButton: document.getElementById("scrollVertical"),
-      scrollHorizontalButton: document.getElementById("scrollHorizontal"),
-      scrollWrappedButton: document.getElementById("scrollWrapped"),
-      spreadNoneButton: document.getElementById("spreadNone"),
-      spreadOddButton: document.getElementById("spreadOdd"),
-      spreadEvenButton: document.getElementById("spreadEven"),
-      imageAltTextSettingsButton: document.getElementById("imageAltTextSettings"),
-      imageAltTextSettingsSeparator: document.getElementById("imageAltTextSettingsSeparator"),
-      documentPropertiesButton: document.getElementById("documentProperties")
+      uploadButton: document.getElementById("secondaryUpload"),
+      viewBookmarkButton: null,
+      firstPageButton: null,
+      lastPageButton: null,
+      pageRotateCwButton: null,
+      pageRotateCcwButton: null,
+      cursorSelectToolButton: null,
+      cursorHandToolButton: null,
+      scrollPageButton: null,
+      scrollVerticalButton: null,
+      scrollHorizontalButton: null,
+      scrollWrappedButton: null,
+      spreadNoneButton: null,
+      spreadOddButton: null,
+      spreadEvenButton: null,
+      imageAltTextSettingsButton: null,
+      imageAltTextSettingsSeparator: null,
+      documentPropertiesButton: null
     },
     sidebar: {
       outerContainer: document.getElementById("outerContainer"),
@@ -15380,6 +15265,19 @@ function getViewerConfiguration() {
       attachmentsView: document.getElementById("attachmentsView"),
       layersView: document.getElementById("layersView"),
       currentOutlineItemButton: document.getElementById("currentOutlineItem")
+    },
+    findBar: {
+      bar: document.getElementById("findbar"),
+      toggleButton: document.getElementById("viewFind"),
+      findField: document.getElementById("findInput"),
+      highlightAllCheckbox: document.getElementById("findHighlightAll"),
+      caseSensitiveCheckbox: document.getElementById("findMatchCase"),
+      matchDiacriticsCheckbox: document.getElementById("findMatchDiacritics"),
+      entireWordCheckbox: document.getElementById("findEntireWord"),
+      findMsg: document.getElementById("findMsg"),
+      findResultsCount: document.getElementById("findResultsCount"),
+      findPreviousButton: document.getElementById("findPrevious"),
+      findNextButton: document.getElementById("findNext")
     },
     passwordOverlay: {
       dialog: document.getElementById("passwordDialog"),

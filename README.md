@@ -18,6 +18,12 @@ offering features such as document loading via URL and base64 encoded strings.
 * `loadUrl(string)` - load PDF from an URL
 * `loadBase64(string)` - load PDF from a base64 encoded string
 * `setOptions(object)` - update options
+  * `theme`: Theme - set viewer theme
+  * `initialScale`: Scale - set initial page scale
+  * `toolbarFontSize`: number - set toolbar font size
+  * `toolbarIconSize`: number - set toolbar icon size
+  * `scaleDropdown`: boolean - display scaling options
+  * `search`: boolean - enable search button
   * `print`: boolean - enable print button
   * `download`: boolean - enable download button
   * `upload`: boolean - enable upload file button
@@ -51,13 +57,13 @@ viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/exampl
 ### CDN
 
 ```html
-<div id="id"></div>
+<div id="viewer-container"></div>
 <script src="https://unpkg.com/pdf-generator-api-pdfviewer@latest/dist/PDFViewer.iife.js"></script>
 <script>
   const { PDFViewer } = PDFGeneratorApi;
 
   const viewer = new PDFViewer({
-    container: document.getElementById("id"),
+    container: document.getElementById("viewer-container"),
   });
 
   viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
@@ -104,20 +110,70 @@ viewer.loadBase64(base64encodedPdf);
 ```
 
 ## Available options
-- **Theme**: PDFViewerThemeOptions
-- **Print**: boolean
-- **Download**: boolean
-- **Upload**: boolean
+PDFViewer theme:
+* **theme**: (`Theme.Light` | `Theme.Dark` | `Theme.PDFApi`)
+  * *Default*: Theme.Light
+
+Initial page scale:
+* **initialScale**: (`Scale.AutomaticZoom` | `Scale.ActualSize` | `Scale.PageFit` | `Scale.PageWidth` | `number`)
+  * *Default*: Scale.PageFit
+
+Toolbar font size:
+* **toolbarFontSize**: (`number`):
+  * Ranged from 10 to 24
+  * *Default*: 16
+
+Toolbar icon size:
+* **toolbarIconSize**: (`16` | `24` | `32` | `48`):
+  * *Default*: 24
+
+Page scale dropdown:
+* **scaleDropdown**: (`boolean`):
+  * *Default*: true
+
+Searching:
+* **search**: (`boolean`):
+  * *Default*: true
+
+Printing:
+* **print**: (`boolean`):
+  * *Default*: true
+
+Downloading:
+* **download**: (`boolean`):
+  * *Default*: true
+
+Uploading:
+* **upload**: (`boolean`):
+  * *Default*: true
 
 ```typescript
-import { PDFViewer, PDFViewerThemes } from "pdf-generator-api-pdfviewer";
+import { PDFViewer, Scale, Theme } from "pdf-generator-api-pdfviewer";
 
+// Initialize options in the constructor
 const viewer = new PDFViewer({
   container: document.getElementById("viewer-container") as HTMLElement,
-})
+  options: {
+    theme: Theme.Light,
+    initialScale: Scale.PageFit,
+    toolbarFontSize: 16,
+    toolbarIconSize: 24,
+    scaleDropdown: true,
+    search: true,
+    print: true,
+    download: true,
+    upload: true,
+  },
+});
 
+// Or set them using API function
 viewer.setOptions({
-  theme: PDFViewerThemes.Light,
+  theme: Theme.Light,
+  initialScale: Scale.PageFit,
+  toolbarFontSize: 16,
+  toolbarIconSize: 24,
+  scaleDropdown: true,
+  search: true,
   print: true,
   download: true,
   upload: true,

@@ -2,13 +2,27 @@ interface PDFViewerParams {
     readonly container: HTMLElement;
     options?: PDFViewerOptions | undefined;
 }
-declare enum PDFViewerThemes {
+declare enum Theme {
     Light = "light",
     Dark = "dark",
     PDFApi = "pdfapi"
 }
+declare enum Scale {
+    AutomaticZoom = "auto",
+    ActualSize = "page-actual",
+    PageFit = "page-fit",
+    PageWidth = "page-width"
+}
+type ToolbarIconSize = 16 | 24 | 32 | 48;
+type ToolbarFontSize = NumericRange<10, 24>;
+type NumericRange<Start extends number, End extends number, Arr extends unknown[] = [], Acc extends number = never> = Arr['length'] extends End ? Acc | Start | End : NumericRange<Start, End, [...Arr, 1], Arr[Start] extends undefined ? Acc : Acc | Arr['length']>;
 interface PDFViewerOptions {
-    readonly theme: PDFViewerThemes;
+    readonly theme: Theme;
+    readonly initialScale: Scale | number;
+    readonly toolbarFontSize: ToolbarFontSize;
+    readonly toolbarIconSize: ToolbarIconSize;
+    readonly scaleDropdown: boolean;
+    readonly search: boolean;
     readonly print: boolean;
     readonly download: boolean;
     readonly upload: boolean;
@@ -74,4 +88,4 @@ declare class PDFViewer {
     private pdfJsApplication;
 }
 
-export { PDFViewer, type PDFViewerOptions, type PDFViewerParams, PDFViewerThemes };
+export { PDFViewer, type PDFViewerOptions, type PDFViewerParams, Scale, Theme, type ToolbarFontSize, type ToolbarIconSize };

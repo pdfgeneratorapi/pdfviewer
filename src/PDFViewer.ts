@@ -3,6 +3,7 @@ import pdfjsStyles from "./viewer.css";
 import pdfjsViewer from "./viewer.mjs";
 import pdfjsLib from "./pdf.min.mjs";
 import pdfjsWorker from "./pdf.worker.min.mjs";
+import pdfjsSandbox from "./pdf.sandbox.min.mjs";
 
 interface PDFViewerParams {
   readonly container: HTMLElement;
@@ -229,7 +230,7 @@ class PDFViewer {
    * @param document - Document
    */
   private loadScripts = (document: Document): void => {
-    [pdfjsLib, pdfjsWorker, pdfjsViewer].forEach((script, key) => {
+    [pdfjsLib, pdfjsWorker, pdfjsSandbox, pdfjsViewer].forEach((script, key) => {
       const scriptElement: HTMLScriptElement = document.createElement("script");
       scriptElement.type = "module";
       scriptElement.defer = true;

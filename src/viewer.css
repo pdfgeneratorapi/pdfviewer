@@ -3441,7 +3441,7 @@ html.is-light{
   --toolbar-bg-color:rgb(226 230 233);
   --toolbar-border-color:rgb(198 204 210);
   --button-color:var(--main-color);
-  --button-hover-color:rgb(0 0 0 / 0.1);
+  --button-hover-color:rgb(203 207 209);
   --button-hover-text-color:var(--main-color);
   --thumbnail-bg-color:transparent;
   --thumbnail-hover-color:rgb(0 0 0 / 0.2);
@@ -3518,7 +3518,9 @@ html,
 body{
   height:100%;
   width:100%;
+  font:message-box;
   font-size:var(--main-font-size);
+  color:var(--main-color);
 }
 
 body{
@@ -3620,6 +3622,36 @@ body.wait::before{
   inset:var(--toolbar-height) 0 0;
   outline:none;
 }
+
+#emptyStateContainer{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  row-gap:30px;
+  align-items:center;
+  justify-content:center;
+}
+
+#emptyStateContainer #emptyStateButton{
+    padding:8px 25px;
+    font-size:var(--main-font-size);
+    cursor:pointer;
+    color:var(--button-color);
+    border:1px solid var(--button-color);
+    border-radius:5px;
+    background-color:var(--body-bg-color);
+    transition-property:background-color;
+    transition-duration:var(--sidebar-transition-duration);
+    transition-timing-function:var(--sidebar-transition-timing-function);
+  }
+
+:is(#emptyStateContainer #emptyStateButton):is(:hover,:focus-visible){
+      border-color:var(--button-hover-color);
+      background-color:var(--button-hover-color);
+      color:var(--button-hover-text-color);
+    }
+
 #viewerContainer:not(.pdfPresentationMode){
   transition-duration:var(--sidebar-transition-duration);
   transition-timing-function:var(--sidebar-transition-timing-function);

@@ -831,7 +831,7 @@ const defaultOptions = {
     kind: OptionKind.WORKER
   },
   workerSrc: {
-    value: "../dist/pdf.worker.min.mjs",
+    value: "",
     kind: OptionKind.WORKER
   }
 };
@@ -841,7 +841,7 @@ const defaultOptions = {
     kind: OptionKind.VIEWER
   };
   defaultOptions.sandboxBundleSrc = {
-    value: "../dist/pdf.sandbox.min.mjs",
+    value: "",
     kind: OptionKind.VIEWER
   };
   defaultOptions.viewerCssTheme = {
@@ -10884,7 +10884,7 @@ class PDFViewer {
   #supportsPinchToZoom = true;
   #textLayerMode = TextLayerMode.ENABLE;
   constructor(options) {
-    const viewerVersion = "5.0.56";
+    const viewerVersion = "5.0.58";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -10932,6 +10932,11 @@ class PDFViewer {
     } else {
       this.renderingQueue = options.renderingQueue;
     }
+    options.emptyState.uploadButton.addEventListener("click", function () {
+      options.eventBus.dispatch("upload", {
+        source: this
+      });
+    });
     const {
       abortSignal
     } = options;
@@ -13131,7 +13136,8 @@ const PDFViewerApplication = {
     });
     this.pdfScriptingManager = pdfScriptingManager;
     const container = appConfig.mainContainer,
-      viewer = appConfig.viewerContainer;
+      viewer = appConfig.viewerContainer,
+      emptyState = appConfig.emptyState;
     const annotationEditorMode = AppOptions.get("annotationEditorMode");
     const pageColors = AppOptions.get("forcePageColors") || window.matchMedia("(forced-colors: active)").matches ? {
       background: AppOptions.get("pageColorsBackground"),
@@ -13147,6 +13153,7 @@ const PDFViewerApplication = {
     const pdfViewer = new PDFViewer({
       container,
       viewer,
+      emptyState,
       eventBus,
       renderingQueue: pdfRenderingQueue,
       linkService: pdfLinkService,
@@ -13291,6 +13298,7 @@ const PDFViewerApplication = {
     const params = parseQueryString(queryString);
     file = params.get("file") ?? AppOptions.get("defaultUrl");
     validateFileURL(file);
+    file ? this.hideEmptyStateOverlay() : this.showEmptyStateOverlay();
     const fileInput = this._openFileInput = document.createElement("input");
     fileInput.id = "fileInput";
     fileInput.hidden = true;
@@ -13309,25 +13317,29 @@ const PDFViewerApplication = {
         fileInput: evt.target
       });
     });
-    appConfig.mainContainer.addEventListener("dragover", function (evt) {
-      for (const item of evt.dataTransfer.items) {
-        if (item.type === "application/pdf") {
-          evt.dataTransfer.dropEffect = evt.dataTransfer.effectAllowed === "copy" ? "copy" : "move";
-          stopEvent(evt);
+    for (const container of [appConfig.mainContainer, appConfig.emptyState.container]) {
+      container.addEventListener("dragover", function (evt) {
+        for (const item of evt.dataTransfer.items) {
+          if (item.type === "application/pdf") {
+            evt.dataTransfer.dropEffect = evt.dataTransfer.effectAllowed === "copy" ? "copy" : "move";
+            stopEvent(evt);
+            return;
+          }
+        }
+      });
+    }
+    for (const container of [appConfig.mainContainer, appConfig.emptyState.container]) {
+      container.addEventListener("drop", function (evt) {
+        if (evt.dataTransfer.files?.[0].type !== "application/pdf") {
           return;
         }
-      }
-    });
-    appConfig.mainContainer.addEventListener("drop", function (evt) {
-      if (evt.dataTransfer.files?.[0].type !== "application/pdf") {
-        return;
-      }
-      stopEvent(evt);
-      eventBus.dispatch("fileinputchange", {
-        source: this,
-        fileInput: evt.dataTransfer
+        stopEvent(evt);
+        eventBus.dispatch("fileinputchange", {
+          source: this,
+          fileInput: evt.dataTransfer
+        });
       });
-    });
+    }
     if (!AppOptions.get("supportsDocumentFonts")) {
       AppOptions.set("disableFontFace", true);
       this.l10n.get("pdfjs-web-fonts-disabled").then(msg => {
@@ -13474,6 +13486,12 @@ const PDFViewerApplication = {
     this.toolbar.uploading = false;
     this.appConfig.toolbar?.upload?.classList.add("hidden");
     this.appConfig.secondaryToolbar?.uploadButton.classList.add("hidden");
+  },
+  showEmptyStateOverlay() {
+    this.appConfig.emptyState.container.classList.remove("hidden");
+  },
+  hideEmptyStateOverlay() {
+    this.appConfig.emptyState.container.classList.add("hidden");
   },
   get pagesCount() {
     return this.pdfDocument ? this.pdfDocument.numPages : 0;
@@ -13637,6 +13655,7 @@ const PDFViewerApplication = {
     };
     return loadingTask.promise.then(pdfDocument => {
       this.load(pdfDocument);
+      this.hideEmptyStateOverlay();
     }, reason => {
       if (loadingTask !== this.pdfLoadingTask) {
         return undefined;
@@ -15186,8 +15205,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.0.56";
-const pdfjsBuild = "f725c4f90";
+const pdfjsVersion = "5.0.58";
+const pdfjsBuild = "18878438c";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,
@@ -15202,6 +15221,10 @@ function getViewerConfiguration() {
     appContainer: document.body,
     mainContainer: document.getElementById("viewerContainer"),
     viewerContainer: document.getElementById("viewer"),
+    emptyState: {
+      container: document.getElementById("emptyStateContainer"),
+      uploadButton: document.getElementById("emptyStateButton")
+    },
     toolbar: {
       container: document.getElementById("toolbarViewer"),
       numPages: document.getElementById("numPages"),

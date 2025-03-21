@@ -19,8 +19,8 @@ RUN sed -i \
     -e 's/\xEF\xBB\xBF//g' \
     build/generic/web/viewer.html
 RUN sed -i \
-    -e 's+../build/pdf.worker.mjs+../dist/pdf.worker.min.mjs+g' \
-    -e 's+../build/pdf.sandbox.mjs+../dist/pdf.sandbox.min.mjs+g' \
+    -e 's+../build/pdf.worker.mjs++g' \
+    -e 's+../build/pdf.sandbox.mjs++g' \
     -e 's+../web/+./+g' \
     -e 's+compressed.tracemonkey-pldi-09.pdf++g' \
     build/generic/web/viewer.mjs

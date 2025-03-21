@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Test</title>
+    </head>
+    <body>
+        <div id="id" style="height: 1000px; width: 100%;"></div>
+        <script src="../dist/PDFViewer.iife.js"></script>
+        <script>
+            const { PDFViewer } = PDFGeneratorApi;
+
+            const viewer = new PDFViewer({
+                container: document.getElementById("id"),
+            });
+
+            viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
+        </script>
+    </body>
+</html>

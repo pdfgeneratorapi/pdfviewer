@@ -2,13 +2,27 @@ interface PDFViewerParams {
     readonly container: HTMLElement;
     options?: PDFViewerOptions | undefined;
 }
-declare enum PDFViewerThemes {
+declare enum Theme {
     Light = "light",
     Dark = "dark",
     PDFApi = "pdfapi"
 }
+declare enum Scale {
+    AutomaticZoom = "auto",
+    ActualSize = "page-actual",
+    PageFit = "page-fit",
+    PageWidth = "page-width"
+}
+type ToolbarIconSize = 16 | 24 | 32 | 48;
+type ToolbarFontSize = NumericRange<10, 24>;
+type NumericRange<Start extends number, End extends number, Arr extends unknown[] = [], Acc extends number = never> = Arr['length'] extends End ? Acc | Start | End : NumericRange<Start, End, [...Arr, 1], Arr[Start] extends undefined ? Acc : Acc | Arr['length']>;
 interface PDFViewerOptions {
-    readonly theme: PDFViewerThemes;
+    readonly theme: Theme;
+    readonly initialScale: Scale | number;
+    readonly toolbarFontSize: ToolbarFontSize;
+    readonly toolbarIconSize: ToolbarIconSize;
+    readonly scaleDropdown: boolean;
+    readonly search: boolean;
     readonly print: boolean;
     readonly download: boolean;
     readonly upload: boolean;
@@ -16,13 +30,21 @@ interface PDFViewerOptions {
 declare class PDFViewer {
     private readonly container;
     /**
+     * The iframe window internal ID
+     */
+    private iframeId;
+    /**
+     * The iframe state
+     */
+    private isIframeLoaded;
+    /**
+     * Interval (in milliseconds) for checking the iframe loading state
+     */
+    private readonly LOADING_INTERVAL;
+    /**
      * Default settings
      */
     private options;
-    /**
-     * Iframe window internal ID
-     */
-    protected iframeId: string;
     constructor(params: PDFViewerParams);
     /**
      * Sets application settings
@@ -44,6 +66,7 @@ declare class PDFViewer {
     loadBase64: (encodedPdf: string) => Promise<void>;
     /**
      * Renders a PDF document using the PDF.js API
+     * Checks every
      *
      * @param documentParams
      */
@@ -74,4 +97,4 @@ declare class PDFViewer {
     private pdfJsApplication;
 }
 
-export { PDFViewer, type PDFViewerOptions, type PDFViewerParams, PDFViewerThemes };
+export { PDFViewer, type PDFViewerOptions, type PDFViewerParams, Scale, Theme, type ToolbarFontSize, type ToolbarIconSize };

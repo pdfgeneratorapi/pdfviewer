@@ -3,20 +3,46 @@ import pdfjsStyles from "./viewer.css";
 import pdfjsViewer from "./viewer.mjs";
 import pdfjsLib from "./pdf.min.mjs";
 import pdfjsWorker from "./pdf.worker.min.mjs";
+import pdfjsSandbox from "./pdf.sandbox.min.mjs";
 
 interface PDFViewerParams {
   readonly container: HTMLElement;
   options?: PDFViewerOptions | undefined;
 }
 
-enum PDFViewerThemes {
+enum Theme {
   Light = "light",
   Dark = "dark",
   PDFApi = "pdfapi",
 }
 
+enum Scale {
+  AutomaticZoom = "auto",
+  ActualSize = "page-actual",
+  PageFit = "page-fit",
+  PageWidth = "page-width",
+}
+
+type ToolbarIconSize = 16 | 24 | 32 | 48;
+type ToolbarFontSize = NumericRange<10, 24>;
+
+type NumericRange<
+  Start extends number,
+  End extends number,
+  Arr extends unknown[] = [],
+  Acc extends number = never
+> = Arr['length'] extends End
+  ? Acc | Start | End
+  : NumericRange<Start, End, [...Arr, 1], Arr[Start] extends undefined ? Acc : Acc | Arr['length']>
+
+
 interface PDFViewerOptions {
-  readonly theme: PDFViewerThemes;
+  readonly theme: Theme;
+  readonly initialScale: Scale | number;
+  readonly toolbarFontSize: ToolbarFontSize;
+  readonly toolbarIconSize: ToolbarIconSize;
+  readonly scaleDropdown: boolean;
+  readonly search: boolean;
   readonly print: boolean;
   readonly download: boolean;
   readonly upload: boolean;
@@ -29,7 +55,14 @@ interface OpenDocumentParams {
 
 interface PDFViewerApplication {
   open(params: OpenDocumentParams): Promise<void>;
-  setTheme(theme: PDFViewerThemes): void;
+  setTheme(theme: Theme): void;
+  setInitialScale(scale: Scale | number): void;
+  setToolbarFontSize(fontSize: ToolbarFontSize): void;
+  setToolbarIconSize(iconSize: ToolbarIconSize): void;
+  showScaleDropdown(): void;
+  hideScaleDropdown(): void;
+  enableTextSearch(): void;
+  disableTextSearch(): void;
   enablePrinting(): void;
   disablePrinting(): void;
   enableDownloading(): void;
@@ -47,19 +80,34 @@ class PDFViewer {
   private readonly container: HTMLElement;
 
   /**
+   * The iframe window internal ID
+   */
+  private iframeId: string = "";
+
+  /**
+   * The iframe state
+   */
+  private isIframeLoaded: boolean = false;
+
+  /**
+   * Interval (in milliseconds) for checking the iframe loading state
+   */
+  private readonly LOADING_INTERVAL: number = 100;
+
+  /**
    * Default settings
    */
   private options: PDFViewerOptions = {
-    theme: PDFViewerThemes.Light,
+    theme: Theme.Light,
+    initialScale: Scale.PageFit,
+    toolbarFontSize: 16,
+    toolbarIconSize: 24,
+    scaleDropdown: true,
+    search: true,
     print: true,
     download: true,
     upload: true,
   };
-
-  /**
-   * Iframe window internal ID
-   */
-  protected iframeId: string = "";
 
   constructor(params: PDFViewerParams) {
     this.container = params.container;
@@ -99,7 +147,7 @@ class PDFViewer {
   /**
    * Loads a document that is base64 encoded
    *
-   * @param encodedPdf
+   * @param encodedPdf - string
    */
   public loadBase64 = async (encodedPdf: string): Promise<void> => {
     await this.render({ data: window.atob(encodedPdf) });
@@ -108,16 +156,26 @@ class PDFViewer {
   /**
    * Renders a PDF document using the PDF.js API
    *
-   * @param documentParams
+   * @param documentParams - OpenDocumentParams
    */
   private render = async (documentParams: OpenDocumentParams): Promise<void> => {
-    const pdfjsApp = await this.pdfJsApplication();
+    const checkLoadingInterval = setInterval(async () => {
+      if (this.isIframeLoaded) {
+        clearInterval(checkLoadingInterval);
 
-    try {
-      await pdfjsApp.open(documentParams);
-    } catch (error) {
-      throw new Error(`PDFViewer error: PDF document can not be loaded - ${error}`);
-    }
+        const pdfjsApp = await this.pdfJsApplication();
+
+        try {
+          await pdfjsApp.open(documentParams);
+        } catch (error) {
+          throw new Error(`PDFViewer error: PDF document can not be loaded - ${error}`);
+        }
+
+        setTimeout(() => {
+          pdfjsApp.setInitialScale(this.options.initialScale);
+        });
+      }
+    }, this.LOADING_INTERVAL);
   };
 
   /**
@@ -126,14 +184,18 @@ class PDFViewer {
   private applyOptions = async (): Promise<void> => {
     const pdfjsApp = await this.pdfJsApplication();
 
-    if (this.options.theme) {
-      pdfjsApp.setTheme(this.options.theme);
-    }
+    pdfjsApp.setTheme(this.options.theme);
+    pdfjsApp.setInitialScale(this.options.initialScale);
+    pdfjsApp.setToolbarFontSize(this.options.toolbarFontSize);
+    pdfjsApp.setToolbarIconSize(this.options.toolbarIconSize);
 
+    this.options.scaleDropdown ? pdfjsApp.showScaleDropdown() : pdfjsApp.hideScaleDropdown();
+    this.options.search ? pdfjsApp.enableTextSearch() : pdfjsApp.disableTextSearch();
     this.options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
     this.options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
     this.options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();
   }
+
 
   /**
    * UI initialization
@@ -163,6 +225,7 @@ class PDFViewer {
     }
 
     iframe.addEventListener("load", async () => {
+      this.isIframeLoaded = true;
       await this.applyOptions();
     });
   };
@@ -184,7 +247,7 @@ class PDFViewer {
    * @param document - Document
    */
   private loadScripts = (document: Document): void => {
-    [pdfjsLib, pdfjsWorker, pdfjsViewer].forEach((script, key) => {
+    [pdfjsLib, pdfjsWorker, pdfjsSandbox, pdfjsViewer].forEach((script, key) => {
       const scriptElement: HTMLScriptElement = document.createElement("script");
       scriptElement.type = "module";
       scriptElement.defer = true;
@@ -215,4 +278,4 @@ class PDFViewer {
   };
 }
 
-export { PDFViewerParams, PDFViewerOptions, PDFViewerThemes, PDFViewer };
+export { PDFViewer, PDFViewerOptions, PDFViewerParams, Scale, Theme, ToolbarFontSize, ToolbarIconSize };

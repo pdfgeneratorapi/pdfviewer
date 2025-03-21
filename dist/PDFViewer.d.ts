@@ -30,13 +30,21 @@ interface PDFViewerOptions {
 declare class PDFViewer {
     private readonly container;
     /**
+     * The iframe window internal ID
+     */
+    private iframeId;
+    /**
+     * The iframe state
+     */
+    private isIframeLoaded;
+    /**
+     * Interval (in milliseconds) for checking the iframe loading state
+     */
+    private readonly LOADING_INTERVAL;
+    /**
      * Default settings
      */
     private options;
-    /**
-     * Iframe window internal ID
-     */
-    protected iframeId: string;
     constructor(params: PDFViewerParams);
     /**
      * Sets application settings
@@ -58,6 +66,7 @@ declare class PDFViewer {
     loadBase64: (encodedPdf: string) => Promise<void>;
     /**
      * Renders a PDF document using the PDF.js API
+     * Checks every
      *
      * @param documentParams
      */

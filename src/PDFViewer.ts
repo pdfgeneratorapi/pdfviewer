@@ -80,6 +80,21 @@ class PDFViewer {
   private readonly container: HTMLElement;
 
   /**
+   * The iframe window internal ID
+   */
+  private iframeId: string = "";
+
+  /**
+   * The iframe state
+   */
+  private isIframeLoaded: boolean = false;
+
+  /**
+   * Interval (in milliseconds) for checking the iframe loading state
+   */
+  private readonly LOADING_INTERVAL: number = 100;
+
+  /**
    * Default settings
    */
   private options: PDFViewerOptions = {
@@ -93,11 +108,6 @@ class PDFViewer {
     download: true,
     upload: true,
   };
-
-  /**
-   * Iframe window internal ID
-   */
-  protected iframeId: string = "";
 
   constructor(params: PDFViewerParams) {
     this.container = params.container;
@@ -137,7 +147,7 @@ class PDFViewer {
   /**
    * Loads a document that is base64 encoded
    *
-   * @param encodedPdf
+   * @param encodedPdf - string
    */
   public loadBase64 = async (encodedPdf: string): Promise<void> => {
     await this.render({ data: window.atob(encodedPdf) });
@@ -146,20 +156,26 @@ class PDFViewer {
   /**
    * Renders a PDF document using the PDF.js API
    *
-   * @param documentParams
+   * @param documentParams - OpenDocumentParams
    */
   private render = async (documentParams: OpenDocumentParams): Promise<void> => {
-    const pdfjsApp = await this.pdfJsApplication();
+    const checkLoadingInterval = setInterval(async () => {
+      if (this.isIframeLoaded) {
+        clearInterval(checkLoadingInterval);
 
-    try {
-      await pdfjsApp.open(documentParams);
-    } catch (error) {
-      throw new Error(`PDFViewer error: PDF document can not be loaded - ${error}`);
-    }
+        const pdfjsApp = await this.pdfJsApplication();
 
-    setTimeout(() => {
-      pdfjsApp.setInitialScale(this.options.initialScale);
-    });
+        try {
+          await pdfjsApp.open(documentParams);
+        } catch (error) {
+          throw new Error(`PDFViewer error: PDF document can not be loaded - ${error}`);
+        }
+
+        setTimeout(() => {
+          pdfjsApp.setInitialScale(this.options.initialScale);
+        });
+      }
+    }, this.LOADING_INTERVAL);
   };
 
   /**
@@ -209,6 +225,7 @@ class PDFViewer {
     }
 
     iframe.addEventListener("load", async () => {
+      this.isIframeLoaded = true;
       await this.applyOptions();
     });
   };

@@ -10884,7 +10884,7 @@ class PDFViewer {
   #supportsPinchToZoom = true;
   #textLayerMode = TextLayerMode.ENABLE;
   constructor(options) {
-    const viewerVersion = "5.0.58";
+    const viewerVersion = "5.0.59";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -10892,9 +10892,6 @@ class PDFViewer {
     this.viewer = options.viewer || options.container.firstElementChild;
     if (this.container?.tagName !== "DIV" || this.viewer?.tagName !== "DIV") {
       throw new Error("Invalid `container` and/or `viewer` option.");
-    }
-    if (this.container.offsetParent && getComputedStyle(this.container).position !== "absolute") {
-      throw new Error("The `container` must be absolutely positioned.");
     }
     this.#resizeObserver.observe(this.container);
     this.eventBus = options.eventBus;
@@ -15205,8 +15202,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.0.58";
-const pdfjsBuild = "18878438c";
+const pdfjsVersion = "5.0.59";
+const pdfjsBuild = "ea4b309df";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

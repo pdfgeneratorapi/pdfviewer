@@ -10884,7 +10884,7 @@ class PDFViewer {
   #supportsPinchToZoom = true;
   #textLayerMode = TextLayerMode.ENABLE;
   constructor(options) {
-    const viewerVersion = "5.0.59";
+    const viewerVersion = "5.0.60";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -13435,8 +13435,8 @@ const PDFViewerApplication = {
     }
   },
   setInitialScale(scaleValue) {
+    AppOptions.set("defaultZoomValue", scaleValue);
     this.toolbar?.setPageScale(scaleValue, scaleValue);
-    this.pdfViewer.currentScaleValue = scaleValue;
   },
   showScaleDropdown() {
     this.appConfig.toolbar?.scaleSelect?.classList.remove("hidden");
@@ -15202,8 +15202,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.0.59";
-const pdfjsBuild = "ea4b309df";
+const pdfjsVersion = "5.0.60";
+const pdfjsBuild = "10cdedc78";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

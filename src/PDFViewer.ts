@@ -170,10 +170,6 @@ class PDFViewer {
         } catch (error) {
           throw new Error(`PDFViewer error: PDF document can not be loaded - ${error}`);
         }
-
-        setTimeout(() => {
-          pdfjsApp.setInitialScale(this.options.initialScale);
-        });
       }
     }, this.LOADING_INTERVAL);
   };

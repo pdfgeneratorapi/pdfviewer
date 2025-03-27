@@ -61,14 +61,13 @@ declare class PDFViewer {
     /**
      * Loads a document that is base64 encoded
      *
-     * @param encodedPdf
+     * @param encodedPdf - string
      */
     loadBase64: (encodedPdf: string) => Promise<void>;
     /**
      * Renders a PDF document using the PDF.js API
-     * Checks every
      *
-     * @param documentParams
+     * @param documentParams - OpenDocumentParams
      */
     private render;
     /**

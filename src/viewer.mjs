@@ -678,7 +678,7 @@ const defaultOptions = {
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE
   },
   enableScripting: {
-    value: true,
+    value: false,
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE
   },
   enableUpdatedAddImage: {
@@ -810,7 +810,7 @@ const defaultOptions = {
     kind: OptionKind.API
   },
   standardFontDataUrl: {
-    value: "./standard_fonts/",
+    value: "",
     kind: OptionKind.API
   },
   useSystemFonts: {
@@ -824,6 +824,10 @@ const defaultOptions = {
   },
   wasmUrl: {
     value: "./wasm/",
+    kind: OptionKind.API
+  },
+  useWorkerFetch: {
+    value: true,
     kind: OptionKind.API
   },
   workerPort: {
@@ -1481,7 +1485,7 @@ class BasePreferences {
     enableNewAltTextWhenAddingImage: true,
     enablePermissions: false,
     enablePrintAutoRotate: true,
-    enableScripting: true,
+    enableScripting: false,
     enableUpdatedAddImage: false,
     externalLinkTarget: 0,
     highlightEditorColors: "yellow=#FFFF98,green=#53FFBC,blue=#80EBFF,pink=#FFCBE6,red=#FF4F5F",
@@ -10884,7 +10888,7 @@ class PDFViewer {
   #supportsPinchToZoom = true;
   #textLayerMode = TextLayerMode.ENABLE;
   constructor(options) {
-    const viewerVersion = "5.0.59";
+    const viewerVersion = "5.0.61";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -13435,8 +13439,8 @@ const PDFViewerApplication = {
     }
   },
   setInitialScale(scaleValue) {
+    AppOptions.set("defaultZoomValue", scaleValue);
     this.toolbar?.setPageScale(scaleValue, scaleValue);
-    this.pdfViewer.currentScaleValue = scaleValue;
   },
   showScaleDropdown() {
     this.appConfig.toolbar?.scaleSelect?.classList.remove("hidden");
@@ -15202,8 +15206,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.0.59";
-const pdfjsBuild = "ea4b309df";
+const pdfjsVersion = "5.0.61";
+const pdfjsBuild = "22c50bb1c";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

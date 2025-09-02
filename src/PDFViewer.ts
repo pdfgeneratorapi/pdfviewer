@@ -43,6 +43,7 @@ interface PDFViewerOptions {
   readonly toolbarIconSize: ToolbarIconSize;
   readonly scaleDropdown: boolean;
   readonly search: boolean;
+  readonly signature: boolean;
   readonly print: boolean;
   readonly download: boolean;
   readonly upload: boolean;
@@ -63,6 +64,8 @@ interface PDFViewerApplication {
   hideScaleDropdown(): void;
   enableTextSearch(): void;
   disableTextSearch(): void;
+  enableSignature(): void;
+  disableSignature(): void;
   enablePrinting(): void;
   disablePrinting(): void;
   enableDownloading(): void;
@@ -104,6 +107,7 @@ class PDFViewer {
     toolbarIconSize: 24,
     scaleDropdown: true,
     search: true,
+    signature: false,
     print: true,
     download: true,
     upload: true,
@@ -187,6 +191,7 @@ class PDFViewer {
 
     this.options.scaleDropdown ? pdfjsApp.showScaleDropdown() : pdfjsApp.hideScaleDropdown();
     this.options.search ? pdfjsApp.enableTextSearch() : pdfjsApp.disableTextSearch();
+    this.options.signature ? pdfjsApp.enableSignature() : pdfjsApp.disableSignature();
     this.options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
     this.options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
     this.options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();

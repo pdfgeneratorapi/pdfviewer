@@ -23,6 +23,7 @@ interface PDFViewerOptions {
     readonly toolbarIconSize: ToolbarIconSize;
     readonly scaleDropdown: boolean;
     readonly search: boolean;
+    readonly signature: boolean;
     readonly print: boolean;
     readonly download: boolean;
     readonly upload: boolean;

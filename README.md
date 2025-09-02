@@ -24,6 +24,7 @@ offering features such as document loading via URL and base64 encoded strings.
   * `toolbarIconSize`: number - set toolbar icon size
   * `scaleDropdown`: boolean - display scaling options
   * `search`: boolean - enable search button
+  * `signature`: boolean - enable signature button
   * `print`: boolean - enable print button
   * `download`: boolean - enable download button
   * `upload`: boolean - enable upload file button
@@ -135,6 +136,10 @@ Searching:
 * **search**: (`boolean`):
   * *Default*: true
 
+Adding signature:
+* **signature**: (`boolean`):
+  * *Default*: false
+
 Printing:
 * **print**: (`boolean`):
   * *Default*: true
@@ -160,6 +165,7 @@ const viewer = new PDFViewer({
     toolbarIconSize: 24,
     scaleDropdown: true,
     search: true,
+    signature: true,
     print: true,
     download: true,
     upload: true,
@@ -174,6 +180,7 @@ viewer.setOptions({
   toolbarIconSize: 24,
   scaleDropdown: true,
   search: true,
+  signature: true,
   print: true,
   download: true,
   upload: true,

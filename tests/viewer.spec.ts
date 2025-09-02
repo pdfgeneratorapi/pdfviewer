@@ -17,6 +17,109 @@ test('loads base64 encoded document', async ({ page }) => {
   await testToolbar(page);
 });
 
+test('adds a typed signature to the document', async ({ page }) => {
+  await page.goto(`file://${BASE64_DOCUMENT}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  await iframe.getByRole('button', { name: 'Signature' }).click();
+
+  const signatureModal = iframe.getByRole('dialog');
+  const signatureCanvas = signatureModal.getByRole('textbox', { name: 'Type your signature' });
+  const signatureAddButton = signatureModal.getByRole('button', { name: 'Add' });
+  const signature = iframe.locator('.resizers');
+
+  await expect(signatureModal.getByText('Add a signature')).toBeVisible();
+  await signatureCanvas.fill("Signature");
+
+  await signatureAddButton.click();
+  await expect(signature).toBeVisible();
+});
+
+test('adds a drawn signature to the document', async ({ page }) => {
+  await page.goto(`file://${BASE64_DOCUMENT}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  await iframe.getByRole('button', { name: 'Signature' }).click();
+
+  const signatureModal = iframe.getByRole('dialog');
+  const signatureCanvas = signatureModal.getByRole('img', { name: 'Draw your signature' });
+  const signatureAddButton = signatureModal.getByRole('button', { name: 'Add', exact: true });
+  const signatureDrawTab = signatureModal.getByRole('tab', { name: 'Draw', exact: true });
+  const signature = iframe.locator('.resizers');
+
+  await expect(signatureModal.getByText('Add a signature')).toBeVisible();
+  await signatureDrawTab.click();
+
+  await expect(signatureCanvas).toBeVisible();
+
+  const svgElement = await signatureCanvas.elementHandle();
+  const signatureBox = await svgElement?.boundingBox();
+
+  if (!signatureBox) {
+    throw new Error('The drawing canvas is not rendered.');
+  }
+
+  const { x, y, width, height } = signatureBox;
+  const startX = x + width / 4;
+  const startY = y + height / 2;
+  const endX = x + (3 * width) / 4;
+  const endY = y + height / 2;
+
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  await page.mouse.move(endX, endY, { steps: 10 });
+  await page.mouse.up();
+
+  await signatureAddButton.click();
+  await expect(signature).toBeVisible();
+});
+
+test('adds an uploaded image signature to the document', async ({ page }) => {
+  await page.goto(`file://${BASE64_DOCUMENT}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  await iframe.getByRole('button', { name: 'Signature' }).click();
+
+  const signatureModal = iframe.getByRole('dialog');
+  const signatureAddButton = signatureModal.getByRole('button', { name: 'Add' });
+  const signatureImageTab = signatureModal.getByRole('tab', { name: 'Image', exact: true });
+  const signatureUploadButton = iframe.getByText('Or browse image files');
+  const signature = iframe.locator('.resizers');
+
+  await expect(signatureModal.getByText('Add a signature')).toBeVisible();
+  await signatureImageTab.click();
+
+  const uploadPromise = page.waitForEvent('filechooser');
+  await signatureUploadButton.click();
+  const fileChooser = await uploadPromise;
+  await fileChooser.setFiles(path.join(__dirname, 'logo.gif'));
+
+  await signatureAddButton.click();
+  await expect(signature).toBeVisible();
+});
+
+test('removes the signature', async ({ page }) => {
+  await page.goto(`file://${BASE64_DOCUMENT}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  await iframe.getByRole('button', { name: 'Signature' }).click();
+
+  const signatureModal = iframe.getByRole('dialog');
+  const signatureCanvas = signatureModal.getByRole('textbox', { name: 'Type your signature' });
+  const signatureAddButton = signatureModal.getByRole('button', { name: 'Add' });
+  const signatureRemoveButton = iframe.getByRole('toolbar');
+  const signature = iframe.locator('.resizers');
+
+  await expect(signatureModal.getByText('Add a signature')).toBeVisible();
+  await signatureCanvas.fill("Signature");
+
+  await signatureAddButton.click();
+  await expect(signature).toBeVisible();
+
+  await signatureRemoveButton.click();
+  await expect(signature).toBeHidden();
+});
+
 test('prints a document', async ({ page }) => {
   await page.goto(`file://${BASE64_DOCUMENT}`);
 

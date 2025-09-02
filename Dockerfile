@@ -23,7 +23,7 @@ RUN sed -i \
     -e 's+../build/pdf.sandbox.mjs++g' \
     -e 's+../web/+./+g' \
     -e 's+compressed.tracemonkey-pldi-09.pdf++g' \
-    -e 's+./standard_fonts/++g' \
+    -e 's+./standard_fonts/+./+g' \
     build/generic/web/viewer.mjs
 
 # remove unused files

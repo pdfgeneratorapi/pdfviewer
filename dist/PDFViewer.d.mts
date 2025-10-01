@@ -92,7 +92,8 @@ declare class PDFViewer {
      */
     private loadScripts;
     /**
-     * Returns PDF.js application
+     * Returns the PDF.js application instance
+     * Retries until the application is loaded
      */
     private pdfJsApplication;
 }

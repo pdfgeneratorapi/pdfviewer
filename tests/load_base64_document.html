@@ -11,6 +11,12 @@
 
             const viewer = new PDFViewer({
                 container: document.getElementById("id"),
+                options: {
+                    signature: true,
+                    print: true,
+                    download: true,
+                    upload: true,
+                }
             });
 
             const base64document =

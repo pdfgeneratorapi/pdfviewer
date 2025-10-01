@@ -95,7 +95,7 @@ class PDFViewer {
   /**
    * Interval (in milliseconds) for checking the iframe loading state
    */
-  private readonly LOADING_INTERVAL: number = 100;
+  private readonly LOADING_INTERVAL: number = 50;
 
   /**
    * Default settings
@@ -197,7 +197,6 @@ class PDFViewer {
     this.options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();
   }
 
-
   /**
    * UI initialization
    */
@@ -258,23 +257,25 @@ class PDFViewer {
   };
 
   /**
-   * Returns PDF.js application
+   * Returns the PDF.js application instance
+   * Retries until the application is loaded
    */
   private pdfJsApplication = async (): Promise<PDFViewerApplication> => {
-    return new Promise((resolve, reject) => {
-      const viewerContainer = document.getElementById(this.iframeId) as HTMLIFrameElement;
+    const viewerContainer = document.getElementById(this.iframeId) as HTMLIFrameElement;
+    const viewerWindow = viewerContainer.contentWindow as IframeWindow;
 
-      if (!viewerContainer) {
-        reject(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" not found.`);
-      }
+    return new Promise((resolve, _reject) => {
+      const loadPdfJsApp = () => {
+        const pdfjsApp = viewerWindow?.PDFViewerApplication;
 
-      const viewerWindow = viewerContainer.contentWindow as IframeWindow;
+        if (pdfjsApp) {
+          resolve(pdfjsApp);
+        } else {
+          setTimeout(loadPdfJsApp, this.LOADING_INTERVAL);
+        }
+      };
 
-      if (!viewerWindow) {
-        reject(`PDFViewer error: PDFViewer iframe "#${this.iframeId}" is corrupted.`);
-      }
-
-      resolve(viewerWindow.PDFViewerApplication);
+      loadPdfJsApp();
     });
   };
 }

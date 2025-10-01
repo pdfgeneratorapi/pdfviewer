@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.4.171
- * pdfjsBuild = 48e1d7758
+ * pdfjsVersion = 5.4.174
+ * pdfjsBuild = 969f3f71f
  */
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
@@ -4168,8 +4168,13 @@ class AnnotationEditorParams {
       this.setAttribute("aria-pressed", !checked);
       dispatchEvent("HIGHLIGHT_SHOW_ALL", !checked);
     });
-    editorSignatureButton.addEventListener("click", () => {
-      dispatchEvent("CREATE");
+    editorSignatureButton.addEventListener("click", async function () {
+      editorSignatureButton.classList.add("toggled");
+      await eventBus.dispatch("switchannotationeditormode", {
+        source: this,
+        mode: AnnotationEditorType.SIGNATURE
+      });
+      await dispatchEvent("CREATE");
     });
     eventBus._on("annotationeditorparamschanged", evt => {
       for (const [type, value] of evt.details) {
@@ -11682,7 +11687,7 @@ class PDFViewer {
   #textLayerMode = TextLayerMode.ENABLE;
   #viewerAlert = null;
   constructor(options) {
-    const viewerVersion = "5.4.171";
+    const viewerVersion = "5.4.174";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -12143,11 +12148,6 @@ class PDFViewer {
           console.warn("Warning: XFA-editing is not implemented.");
         } else if (isValidAnnotationEditorMode(mode)) {
           this.#annotationEditorUIManager = new AnnotationEditorUIManager(this.container, viewer, this.#viewerAlert, this.#altTextManager, this.#commentManager, this.#signatureManager, eventBus, pdfDocument, pageColors, this.#annotationEditorHighlightColors, this.#enableHighlightFloatingButton, this.#enableUpdatedAddImage, this.#enableNewAltTextWhenAddingImage, this.#mlManager, this.#editorUndoBar, this.#supportsPinchToZoom);
-          if (this.#signatureManager) {
-            this.annotationEditorMode = {
-              mode: AnnotationEditorType.SIGNATURE
-            };
-          }
           eventBus.dispatch("annotationeditoruimanager", {
             source: this,
             uiManager: this.#annotationEditorUIManager
@@ -13284,12 +13284,8 @@ class SecondaryToolbar {
     this.#opts = options;
     const buttons = [{
       element: options.signatureButton,
-      eventName: "switchannotationeditorparams",
-      close: false,
-      eventDetails: {
-        source: this,
-        type: AnnotationEditorParamsType.CREATE
-      }
+      eventName: "signature",
+      close: false
     }, {
       element: options.printButton,
       eventName: "print",
@@ -13339,17 +13335,27 @@ class SecondaryToolbar {
       close,
       eventDetails
     } of buttons) {
-      element.addEventListener("click", evt => {
+      element.addEventListener("click", async evt => {
         if (eventName !== null) {
           eventBus.dispatch(eventName, {
             source: this,
             ...eventDetails
           });
         }
+        if (eventName === "signature") {
+          await eventBus.dispatch("switchannotationeditormode", {
+            source: this,
+            mode: AnnotationEditorType.SIGNATURE
+          });
+          await eventBus.dispatch("switchannotationeditorparams", {
+            source: this,
+            type: AnnotationEditorParamsType.CREATE
+          });
+        }
         if (close) {
           this.close();
         }
-        eventBus.dispatch("reporttelemetry", {
+        await eventBus.dispatch("reporttelemetry", {
           source: this,
           details: {
             type: "buttons",
@@ -13428,6 +13434,7 @@ class SignatureManager {
   #l10n;
   #overlayManager;
   #signatureStorage;
+  #signatureToolbarButton;
   #uiManager = null;
   static #l10nDescription = null;
   constructor({
@@ -13451,7 +13458,8 @@ class SignatureManager {
     errorCloseButton,
     errorBar,
     errorTitle,
-    errorDescription
+    errorDescription,
+    signatureToolbarButton
   }, overlayManager, l10n, signatureStorage, eventBus) {
     this.#addButton = addButton;
     this.#clearButton = clearButton;
@@ -13472,6 +13480,7 @@ class SignatureManager {
     this.#typeInput = typeInput;
     this.#l10n = l10n;
     this.#signatureStorage = signatureStorage;
+    this.#signatureToolbarButton = signatureToolbarButton;
     this.#eventBus = eventBus;
     SignatureManager.#l10nDescription ||= Object.freeze({
       signature: "pdfjs-editor-add-signature-description-default-when-drawing",
@@ -13491,6 +13500,11 @@ class SignatureManager {
     });
     dialog.addEventListener("drop", e => {
       stopEvent(e);
+    });
+    dialog.addEventListener("keydown", async e => {
+      if (e.key === "Escape") {
+        this.#cancel();
+      }
     });
     cancelButton.addEventListener("click", this.#cancel.bind(this));
     addButton.addEventListener("click", this.#add.bind(this));
@@ -13907,104 +13921,6 @@ class SignatureManager {
       }
     });
   }
-  #addToolbarButton(signatureData, uuid, description) {
-    const {
-      curves,
-      areContours,
-      thickness,
-      width,
-      height
-    } = signatureData;
-    const maxDim = Math.max(width, height);
-    const outlineData = SignatureExtractor.processDrawnLines({
-      lines: {
-        curves,
-        thickness,
-        width,
-        height
-      },
-      pageWidth: maxDim,
-      pageHeight: maxDim,
-      rotation: 0,
-      innerMargin: 0,
-      mustSmooth: false,
-      areContours
-    });
-    if (!outlineData) {
-      return;
-    }
-    const {
-      outline
-    } = outlineData;
-    const svgFactory = new DOMSVGFactory();
-    const div = document.createElement("div");
-    const button = document.createElement("button");
-    button.addEventListener("click", () => {
-      this.#eventBus.dispatch("switchannotationeditorparams", {
-        source: this,
-        type: AnnotationEditorParamsType.CREATE,
-        value: {
-          signatureData: {
-            lines: {
-              curves,
-              thickness,
-              width,
-              height
-            },
-            mustSmooth: false,
-            areContours,
-            description,
-            uuid,
-            heightInPage: DEFAULT_HEIGHT_IN_PAGE
-          }
-        }
-      });
-    });
-    div.append(button);
-    div.classList.add("toolbarAddSignatureButtonContainer");
-    const svg = svgFactory.create(1, 1, true);
-    button.append(svg);
-    const span = document.createElement("span");
-    span.ariaHidden = true;
-    button.append(span);
-    button.classList.add("toolbarAddSignatureButton");
-    button.type = "button";
-    span.textContent = description;
-    button.setAttribute("data-l10n-id", "pdfjs-editor-add-saved-signature-button");
-    button.setAttribute("data-l10n-args", JSON.stringify({
-      description
-    }));
-    button.tabIndex = 0;
-    const path = svgFactory.createElement("path");
-    svg.append(path);
-    svg.setAttribute("viewBox", outline.viewBox);
-    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-    if (areContours) {
-      path.classList.add("contours");
-    }
-    path.setAttribute("d", outline.toSVGPath());
-    const deleteButton = document.createElement("button");
-    div.append(deleteButton);
-    deleteButton.classList.add("toolbarButton", "deleteButton");
-    deleteButton.setAttribute("data-l10n-id", "pdfjs-editor-delete-signature-button1");
-    deleteButton.type = "button";
-    deleteButton.tabIndex = 0;
-    deleteButton.addEventListener("click", async () => {
-      if (await this.#signatureStorage.delete(uuid)) {
-        div.remove();
-        this.#reportTelemetry({
-          type: "signature",
-          action: "pdfjs.signature.delete_saved",
-          data: {
-            savedCount: await this.#signatureStorage.size()
-          }
-        });
-      }
-    });
-    const deleteSpan = document.createElement("span");
-    deleteButton.append(deleteSpan);
-    deleteSpan.setAttribute("data-l10n-id", "pdfjs-editor-delete-signature-button-label1");
-  }
   getSignature(params) {
     return this.open(params);
   }
@@ -14025,7 +13941,12 @@ class SignatureManager {
     tabType.click();
   }
   #cancel() {
-    this.#finish();
+    this.#eventBus.dispatch("switchannotationeditormode", {
+      source: this,
+      mode: AnnotationEditorType.NONE
+    });
+    this.destroy();
+    this.#signatureToolbarButton.classList.remove("toggled");
   }
   #finish() {
     this.#overlayManager.closeIfActive(this.#dialog);
@@ -14074,7 +13995,7 @@ class SignatureManager {
       }
     });
     this.#currentEditor.addSignature(data, DEFAULT_HEIGHT_IN_PAGE, this.#description.value, null);
-    this.#finish();
+    this.#cancel();
   }
   destroy() {
     this.#uiManager = null;
@@ -14315,7 +14236,8 @@ class Toolbar {
       editorInkButton,
       editorInkParamsToolbar,
       editorStampButton,
-      editorStampParamsToolbar
+      editorStampParamsToolbar,
+      signature
     } = this.#opts;
     toggleExpandedBtn(editorFreeTextButton, mode === AnnotationEditorType.FREETEXT, editorFreeTextParamsToolbar);
     toggleExpandedBtn(editorHighlightButton, mode === AnnotationEditorType.HIGHLIGHT, editorHighlightParamsToolbar);
@@ -14326,6 +14248,7 @@ class Toolbar {
     editorHighlightButton.disabled = isDisable;
     editorInkButton.disabled = isDisable;
     editorStampButton.disabled = isDisable;
+    signature.disabled = isDisable;
   }
   #updateUIState(resetNumPages = false) {
     const {
@@ -16729,8 +16652,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.4.171";
-const pdfjsBuild = "48e1d7758";
+const pdfjsVersion = "5.4.174";
+const pdfjsBuild = "969f3f71f";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,
@@ -16913,7 +16836,8 @@ function getViewerConfiguration() {
       errorDescription: document.getElementById("addSignatureErrorDescription"),
       errorCloseButton: document.getElementById("addSignatureErrorCloseButton"),
       cancelButton: document.getElementById("addSignatureCancelButton"),
-      addButton: document.getElementById("addSignatureAddButton")
+      addButton: document.getElementById("addSignatureAddButton"),
+      signatureToolbarButton: document.getElementById("signature")
     },
     annotationEditorParams: {
       editorFreeTextFontSize: document.getElementById("editorFreeTextFontSize"),

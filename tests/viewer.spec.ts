@@ -26,7 +26,7 @@ test('adds a typed signature to the document', async ({ page }) => {
   const signatureModal = iframe.getByRole('dialog');
   const signatureCanvas = signatureModal.getByRole('textbox', { name: 'Type your signature' });
   const signatureAddButton = signatureModal.getByRole('button', { name: 'Add' });
-  const signature = iframe.locator('.resizers');
+  const signature = iframe.locator('.signatureEditor');
 
   await expect(signatureModal.getByText('Add a signature')).toBeVisible();
   await signatureCanvas.fill("Signature");
@@ -45,7 +45,7 @@ test('adds a drawn signature to the document', async ({ page }) => {
   const signatureCanvas = signatureModal.getByRole('img', { name: 'Draw your signature' });
   const signatureAddButton = signatureModal.getByRole('button', { name: 'Add', exact: true });
   const signatureDrawTab = signatureModal.getByRole('tab', { name: 'Draw', exact: true });
-  const signature = iframe.locator('.resizers');
+  const signature = iframe.locator('.signatureEditor');
 
   await expect(signatureModal.getByText('Add a signature')).toBeVisible();
   await signatureDrawTab.click();
@@ -84,7 +84,7 @@ test('adds an uploaded image signature to the document', async ({ page }) => {
   const signatureAddButton = signatureModal.getByRole('button', { name: 'Add' });
   const signatureImageTab = signatureModal.getByRole('tab', { name: 'Image', exact: true });
   const signatureUploadButton = iframe.getByText('Or browse image files');
-  const signature = iframe.locator('.resizers');
+  const signature = iframe.locator('.signatureEditor');
 
   await expect(signatureModal.getByText('Add a signature')).toBeVisible();
   await signatureImageTab.click();
@@ -101,14 +101,16 @@ test('adds an uploaded image signature to the document', async ({ page }) => {
 test('removes the signature', async ({ page }) => {
   await page.goto(`file://${BASE64_DOCUMENT}`);
 
-  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  const iframeElement = page.locator(`#${IFRAME_ID}`);
+  const iframe = await iframeElement.contentFrame();
+
   await iframe.getByRole('button', { name: 'Signature' }).click();
 
   const signatureModal = iframe.getByRole('dialog');
   const signatureCanvas = signatureModal.getByRole('textbox', { name: 'Type your signature' });
   const signatureAddButton = signatureModal.getByRole('button', { name: 'Add' });
-  const signatureRemoveButton = iframe.getByRole('toolbar');
-  const signature = iframe.locator('.resizers');
+  const signatureRemoveButton = iframe.locator('.editToolbar');
+  const signature = iframe.locator('.signatureEditor');
 
   await expect(signatureModal.getByText('Add a signature')).toBeVisible();
   await signatureCanvas.fill("Signature");
@@ -188,6 +190,24 @@ test('uploads a document via action button', async ({ page }) => {
 
   const fileData = iframe.getByText('CERTIFICATE', { exact: true })
   await expect(fileData).toBeVisible();
+});
+
+test('selects text in the document', async ({ page }) => {
+  await page.goto(`file://${EMPTY_DOCUMENT}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  const textToSelect = iframe.getByText('Drag & drop your PDF here or click upload', { exact: true });
+
+  const textBox = await textToSelect.boundingBox();
+
+  if (!textBox) {
+    throw new Error('The text is not selectable.');
+  }
+
+  await page.mouse.move(textBox.x + 2, textBox.y + 2);
+  await page.mouse.down();
+  await page.mouse.move(textBox.x + textBox.width - 2, textBox.y + 2);
+  await page.mouse.up();
 });
 
 const testToolbar = async (page: Page) => {

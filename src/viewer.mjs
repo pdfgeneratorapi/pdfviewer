@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.4.174
- * pdfjsBuild = 969f3f71f
+ * pdfjsVersion = 5.4.177
+ * pdfjsBuild = 100cd91e7
  */
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
@@ -11687,7 +11687,7 @@ class PDFViewer {
   #textLayerMode = TextLayerMode.ENABLE;
   #viewerAlert = null;
   constructor(options) {
-    const viewerVersion = "5.4.174";
+    const viewerVersion = "5.4.177";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -13996,6 +13996,9 @@ class SignatureManager {
     });
     this.#currentEditor.addSignature(data, DEFAULT_HEIGHT_IN_PAGE, this.#description.value, null);
     this.#cancel();
+    window.parent.postMessage({
+      type: "signature-added"
+    });
   }
   destroy() {
     this.#uiManager = null;
@@ -15273,6 +15276,9 @@ const PDFViewerApplication = {
     classList.add("wait");
     await (this.pdfDocument?.annotationStorage.size > 0 ? this.save() : this.download());
     classList.remove("wait");
+    window.parent.postMessage({
+      type: "document-saved"
+    });
   },
   async _documentError(key, moreInfo = null) {
     this._unblockDocumentLoadEvent();
@@ -15471,6 +15477,20 @@ const PDFViewerApplication = {
     });
     this._initializePageLabels(pdfDocument);
     this._initializeMetadata(pdfDocument);
+    window.parent.postMessage({
+      type: "document-uploaded"
+    });
+  },
+  async getBase64Document() {
+    const dataObject = await this.pdfDocument.saveDocument();
+    const byteArray = Uint8Array.from(Object.values(dataObject));
+    let binary = "";
+    const chunkSize = 0x8000;
+    for (let i = 0; i < byteArray.length; i += chunkSize) {
+      const chunk = byteArray.subarray(i, i + chunkSize);
+      binary += String.fromCharCode.apply(null, Array.from(chunk));
+    }
+    return btoa(binary);
   },
   async _scriptingDocProperties(pdfDocument) {
     if (!this.documentInfo) {
@@ -15752,6 +15772,9 @@ const PDFViewerApplication = {
     }
     this.forceRendering();
     this.setTitle();
+    window.parent.postMessage({
+      type: "document-printed"
+    });
   },
   rotatePages(delta) {
     this.pdfViewer.pagesRotation += delta;
@@ -16652,8 +16675,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.4.174";
-const pdfjsBuild = "969f3f71f";
+const pdfjsVersion = "5.4.177";
+const pdfjsBuild = "100cd91e7";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

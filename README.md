@@ -17,6 +17,7 @@ offering features such as document loading via URL and base64 encoded strings.
 ### API
 * `loadUrl(string)` - load PDF from an URL
 * `loadBase64(string)` - load PDF from a base64 encoded string
+* `getBase64()` - get base64 encoded PDF
 * `setOptions(object)` - update options
   * `theme`: Theme - set viewer theme
   * `initialScale`: Scale - set initial page scale
@@ -184,6 +185,47 @@ viewer.setOptions({
   print: true,
   download: true,
   upload: true,
+});
+```
+
+## Available events
+
+Events are dispatched as window.postMessage messages with an object containing a type
+field (matching one of the event names).
+
+| Event                   | Description                                                 |
+|:------------------------|:------------------------------------------------------------|
+| `document-uploaded`     | Triggered after a PDF file has been successfully uploaded.  |
+| `document-saved`        | Triggered after the current PDF file has been saved.        |
+| `document-updated`      | Triggered after the current PDF file has been updated.      |
+| `document-printed`      | Triggered after the current PDF file has been printed.      |
+| `signature-added`       | Triggered after a signature has been added to the document. |
+
+```typescript
+const viewer = new PDFViewer({
+  container: document.getElementById("viewer-container"),
+})
+
+viewer.loadUrl("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf");
+
+window.addEventListener("message", async (event) => {
+  switch (event.data.type) {
+    case Event.DocumentUploaded:
+      console.log("Triggered after a PDF file has been successfully uploaded.");
+      break;
+    case Event.DocumentSaved:
+      console.log("Triggered after the current PDF file has been saved.");
+      break;
+    case Event.DocumentUpdated:
+      console.log("Triggered after the current PDF file has been updated.");
+      break;
+    case Event.DocumentPrinted:
+      console.log("Triggered after the current PDF file has been printed.");
+      break;
+    case Event.SignatureAdded:
+      console.log("Triggered after a signature has been added to the document.");
+      break;
+  }
 });
 ```
 

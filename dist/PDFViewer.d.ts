@@ -13,6 +13,13 @@ declare enum Scale {
     PageFit = "page-fit",
     PageWidth = "page-width"
 }
+declare enum Event {
+    DocumentUploaded = "document-uploaded",
+    DocumentSaved = "document-saved",
+    DocumentPrinted = "document-printed",
+    SignatureAdded = "signature-added",
+    DocumentUpdated = "document-updated"
+}
 type ToolbarIconSize = 16 | 24 | 32 | 48;
 type ToolbarFontSize = NumericRange<10, 24>;
 type NumericRange<Start extends number, End extends number, Arr extends unknown[] = [], Acc extends number = never> = Arr['length'] extends End ? Acc | Start | End : NumericRange<Start, End, [...Arr, 1], Arr[Start] extends undefined ? Acc : Acc | Arr['length']>;
@@ -66,6 +73,10 @@ declare class PDFViewer {
      */
     loadBase64: (encodedPdf: string) => Promise<void>;
     /**
+     * Returns the base64 encoded PDF document
+     */
+    getBase64: () => Promise<string>;
+    /**
      * Renders a PDF document using the PDF.js API
      *
      * @param documentParams - OpenDocumentParams
@@ -98,4 +109,4 @@ declare class PDFViewer {
     private pdfJsApplication;
 }
 
-export { PDFViewer, type PDFViewerOptions, type PDFViewerParams, Scale, Theme, type ToolbarFontSize, type ToolbarIconSize };
+export { Event, PDFViewer, type PDFViewerOptions, type PDFViewerParams, Scale, Theme, type ToolbarFontSize, type ToolbarIconSize };

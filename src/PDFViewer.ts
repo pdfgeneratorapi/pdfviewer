@@ -23,6 +23,14 @@ enum Scale {
   PageWidth = "page-width",
 }
 
+enum Event {
+  DocumentUploaded = "document-uploaded",
+  DocumentSaved = "document-saved",
+  DocumentPrinted = "document-printed",
+  SignatureAdded = "signature-added",
+  DocumentUpdated = "document-updated",
+}
+
 type ToolbarIconSize = 16 | 24 | 32 | 48;
 type ToolbarFontSize = NumericRange<10, 24>;
 
@@ -72,6 +80,7 @@ interface PDFViewerApplication {
   disableDownloading(): void;
   enableUploading(): void;
   disableUploading(): void;
+  getBase64Document(): Promise<string>;
 }
 
 interface IframeWindow extends Window {
@@ -155,6 +164,19 @@ class PDFViewer {
    */
   public loadBase64 = async (encodedPdf: string): Promise<void> => {
     await this.render({ data: window.atob(encodedPdf) });
+  };
+
+  /**
+   * Returns the base64 encoded PDF document
+   */
+  public getBase64 = async (): Promise<string> => {
+    if (!this.isIframeLoaded) {
+      throw new Error(`PDFViewer error: PDF document can not be encoded - iframe is not loaded. Call loadUrl or loadBase64 first.`);
+    }
+
+    const pdfjsApp = await this.pdfJsApplication();
+
+    return pdfjsApp.getBase64Document();
   };
 
   /**
@@ -280,4 +302,4 @@ class PDFViewer {
   };
 }
 
-export { PDFViewer, PDFViewerOptions, PDFViewerParams, Scale, Theme, ToolbarFontSize, ToolbarIconSize };
+export { PDFViewer, PDFViewerOptions, PDFViewerParams, Event, Scale, Theme, ToolbarFontSize, ToolbarIconSize };

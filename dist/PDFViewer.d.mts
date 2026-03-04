@@ -34,6 +34,7 @@ interface PDFViewerOptions {
     readonly print: boolean;
     readonly download: boolean;
     readonly upload: boolean;
+    readonly sidebar: boolean;
 }
 declare class PDFViewer {
     private readonly container;

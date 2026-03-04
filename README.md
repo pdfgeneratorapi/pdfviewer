@@ -29,6 +29,7 @@ offering features such as document loading via URL and base64 encoded strings.
   * `print`: boolean - enable print button
   * `download`: boolean - enable download button
   * `upload`: boolean - enable upload file button
+  * `sidebar`: boolean - display sidebar on load
 
 
 ### ECMAScript module
@@ -153,6 +154,10 @@ Uploading:
 * **upload**: (`boolean`):
   * *Default*: true
 
+Sidebar:
+* **sidebar**: (`boolean`)
+  * *Default*: true
+
 ```typescript
 import { PDFViewer, Scale, Theme } from "pdf-generator-api-pdfviewer";
 
@@ -170,6 +175,7 @@ const viewer = new PDFViewer({
     print: true,
     download: true,
     upload: true,
+    sidebar: true,
   },
 });
 
@@ -185,6 +191,7 @@ viewer.setOptions({
   print: true,
   download: true,
   upload: true,
+  sidebar: true,
 });
 ```
 

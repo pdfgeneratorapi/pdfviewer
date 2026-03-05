@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.4.177
- * pdfjsBuild = 100cd91e7
+ * pdfjsVersion = 5.4.178
+ * pdfjsBuild = 97ff4b67c
  */
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
@@ -11687,7 +11687,7 @@ class PDFViewer {
   #textLayerMode = TextLayerMode.ENABLE;
   #viewerAlert = null;
   constructor(options) {
-    const viewerVersion = "5.4.177";
+    const viewerVersion = "5.4.178";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -14509,11 +14509,6 @@ const PDFViewerApplication = {
     if (this.isViewerEmbedded && AppOptions.get("externalLinkTarget") === LinkTarget.NONE) {
       AppOptions.set("externalLinkTarget", LinkTarget.TOP);
     }
-    if (window.innerWidth >= this._smallScreenResolution) {
-      AppOptions.set("sidebarViewOnLoad", SidebarView.THUMBS);
-    } else {
-      AppOptions.set("sidebarViewOnLoad", SidebarView.NONE);
-    }
     await this._initializeViewerComponents();
     this.bindEvents();
     this.bindWindowEvents();
@@ -15030,6 +15025,16 @@ const PDFViewerApplication = {
     this.toolbar.uploading = false;
     this.appConfig.toolbar?.upload?.classList.add("hidden");
     this.appConfig.secondaryToolbar?.uploadButton.classList.add("hidden");
+  },
+  showSidebar() {
+    if (window.innerWidth >= this._smallScreenResolution) {
+      AppOptions.set("sidebarViewOnLoad", SidebarView.THUMBS);
+    } else {
+      AppOptions.set("sidebarViewOnLoad", SidebarView.NONE);
+    }
+  },
+  hideSidebar() {
+    AppOptions.set("sidebarViewOnLoad", SidebarView.NONE);
   },
   showEmptyStateOverlay() {
     this.appConfig.emptyState.container.classList.remove("hidden");
@@ -16675,8 +16680,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.4.177";
-const pdfjsBuild = "100cd91e7";
+const pdfjsVersion = "5.4.178";
+const pdfjsBuild = "97ff4b67c";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

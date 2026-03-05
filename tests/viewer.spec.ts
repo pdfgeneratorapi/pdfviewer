@@ -1,10 +1,11 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
-import { test, expect, Page } from '@playwright/test';
+import { Browser, expect, Page, test } from '@playwright/test';
 
 const IFRAME_ID = 'id-iframe';
 const REMOTE_DOCUMENT = path.resolve(__dirname, 'load_remote_document.html');
 const BASE64_DOCUMENT = path.resolve(__dirname, 'load_base64_document.html');
+const BASE64_DOCUMENT_WITHOUT_SIDEBAR = path.resolve(__dirname, 'load_base64_document_without_sidebar.html');
 const EMPTY_DOCUMENT = path.resolve(__dirname, 'empty_document.html');
 
 test('loads document from URL', async ({ page }) => {
@@ -15,6 +16,23 @@ test('loads document from URL', async ({ page }) => {
 test('loads base64 encoded document', async ({ page }) => {
   await page.goto(`file://${BASE64_DOCUMENT}`);
   await testToolbar(page);
+});
+
+test("sidebar is closed on small-screen devices by default", async ({ browser }) => {
+  const page = await createMobileContext(browser)
+  await page.goto(`file://${BASE64_DOCUMENT}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  const sidebar = iframe.locator('#thumbnailView');
+  await expect(sidebar).toBeHidden();
+});
+
+test("sidebar is closed when disabled", async ({ page }) => {
+  await page.goto(`file://${BASE64_DOCUMENT_WITHOUT_SIDEBAR}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  const sidebar = iframe.locator('#thumbnailView');
+  await expect(sidebar).toBeHidden();
 });
 
 test('adds a typed signature to the document', async ({ page }) => {
@@ -242,3 +260,12 @@ const testToolbar = async (page: Page) => {
   await findbarButton.click();
   await expect(findbar).toBeVisible();
 };
+
+const createMobileContext = async (browser: Browser) => {
+  const context = await browser.newContext({
+    userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
+    viewport: { width: 390, height: 844 },
+  });
+
+  return await context.newPage();
+}

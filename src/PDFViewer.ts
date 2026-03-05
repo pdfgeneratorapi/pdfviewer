@@ -55,6 +55,7 @@ interface PDFViewerOptions {
   readonly print: boolean;
   readonly download: boolean;
   readonly upload: boolean;
+  readonly sidebar: boolean;
 }
 
 interface OpenDocumentParams {
@@ -80,6 +81,8 @@ interface PDFViewerApplication {
   disableDownloading(): void;
   enableUploading(): void;
   disableUploading(): void;
+  showSidebar(): void;
+  hideSidebar(): void;
   getBase64Document(): Promise<string>;
 }
 
@@ -120,6 +123,7 @@ class PDFViewer {
     print: true,
     download: true,
     upload: true,
+    sidebar: true,
   };
 
   constructor(params: PDFViewerParams) {
@@ -217,6 +221,7 @@ class PDFViewer {
     this.options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
     this.options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
     this.options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();
+    this.options.sidebar ? pdfjsApp.showSidebar() : pdfjsApp.hideSidebar();
   }
 
   /**

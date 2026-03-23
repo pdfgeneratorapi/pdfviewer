@@ -44,13 +44,19 @@ test('adds a typed signature to the document', async ({ page }) => {
   const signatureModal = iframe.getByRole('dialog');
   const signatureCanvas = signatureModal.getByRole('textbox', { name: 'Type your signature' });
   const signatureAddButton = signatureModal.getByRole('button', { name: 'Add' });
+  const signatureAcceptButton = iframe.locator('.acceptButton');
   const signature = iframe.locator('.signatureEditor');
+  const editorLayer = iframe.locator('.signatureEditing');
 
   await expect(signatureModal.getByText('Add a signature')).toBeVisible();
   await signatureCanvas.fill("Signature");
 
   await signatureAddButton.click();
   await expect(signature).toBeVisible();
+  await expect(editorLayer).toBeVisible();
+
+  await signatureAcceptButton.click();
+  await expect(editorLayer).toBeHidden();
 });
 
 test('adds a drawn signature to the document', async ({ page }) => {
@@ -62,8 +68,10 @@ test('adds a drawn signature to the document', async ({ page }) => {
   const signatureModal = iframe.getByRole('dialog');
   const signatureCanvas = signatureModal.getByRole('img', { name: 'Draw your signature' });
   const signatureAddButton = signatureModal.getByRole('button', { name: 'Add', exact: true });
+  const signatureAcceptButton = iframe.locator('.acceptButton');
   const signatureDrawTab = signatureModal.getByRole('tab', { name: 'Draw', exact: true });
   const signature = iframe.locator('.signatureEditor');
+  const editorLayer = iframe.locator('.signatureEditing');
 
   await expect(signatureModal.getByText('Add a signature')).toBeVisible();
   await signatureDrawTab.click();
@@ -90,6 +98,10 @@ test('adds a drawn signature to the document', async ({ page }) => {
 
   await signatureAddButton.click();
   await expect(signature).toBeVisible();
+  await expect(editorLayer).toBeVisible();
+
+  await signatureAcceptButton.click();
+  await expect(editorLayer).toBeHidden();
 });
 
 test('adds an uploaded image signature to the document', async ({ page }) => {
@@ -100,9 +112,11 @@ test('adds an uploaded image signature to the document', async ({ page }) => {
 
   const signatureModal = iframe.getByRole('dialog');
   const signatureAddButton = signatureModal.getByRole('button', { name: 'Add' });
+  const signatureAcceptButton = iframe.locator('.acceptButton');
   const signatureImageTab = signatureModal.getByRole('tab', { name: 'Image', exact: true });
   const signatureUploadButton = iframe.getByText('Or browse image files');
   const signature = iframe.locator('.signatureEditor');
+  const editorLayer = iframe.locator('.signatureEditing');
 
   await expect(signatureModal.getByText('Add a signature')).toBeVisible();
   await signatureImageTab.click();
@@ -114,6 +128,10 @@ test('adds an uploaded image signature to the document', async ({ page }) => {
 
   await signatureAddButton.click();
   await expect(signature).toBeVisible();
+  await expect(editorLayer).toBeVisible();
+
+  await signatureAcceptButton.click();
+  await expect(editorLayer).toBeHidden();
 });
 
 test('removes the signature', async ({ page }) => {
@@ -127,17 +145,20 @@ test('removes the signature', async ({ page }) => {
   const signatureModal = iframe.getByRole('dialog');
   const signatureCanvas = signatureModal.getByRole('textbox', { name: 'Type your signature' });
   const signatureAddButton = signatureModal.getByRole('button', { name: 'Add' });
-  const signatureRemoveButton = iframe.locator('.editToolbar');
+  const signatureRemoveButton = iframe.locator('.deleteButton');
   const signature = iframe.locator('.signatureEditor');
+  const editorLayer = iframe.locator('.signatureEditing');
 
   await expect(signatureModal.getByText('Add a signature')).toBeVisible();
   await signatureCanvas.fill("Signature");
 
   await signatureAddButton.click();
   await expect(signature).toBeVisible();
+  await expect(editorLayer).toBeVisible();
 
   await signatureRemoveButton.click();
   await expect(signature).toBeHidden();
+  await expect(editorLayer).toBeHidden();
 });
 
 test('prints a document', async ({ page }) => {

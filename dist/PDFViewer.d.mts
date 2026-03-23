@@ -18,6 +18,7 @@ declare enum Event {
     DocumentSaved = "document-saved",
     DocumentPrinted = "document-printed",
     SignatureAdded = "signature-added",
+    SignatureClickOutside = "signature-click-outside",
     DocumentUpdated = "document-updated"
 }
 type ToolbarIconSize = 16 | 24 | 32 | 48;

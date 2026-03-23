@@ -200,13 +200,14 @@ viewer.setOptions({
 Events are dispatched as window.postMessage messages with an object containing a type
 field (matching one of the event names).
 
-| Event                   | Description                                                 |
-|:------------------------|:------------------------------------------------------------|
-| `document-uploaded`     | Triggered after a PDF file has been successfully uploaded.  |
-| `document-saved`        | Triggered after the current PDF file has been saved.        |
-| `document-updated`      | Triggered after the current PDF file has been updated.      |
-| `document-printed`      | Triggered after the current PDF file has been printed.      |
-| `signature-added`       | Triggered after a signature has been added to the document. |
+| Event                     | Description                                                 |
+|:--------------------------|:------------------------------------------------------------|
+| `document-uploaded`       | Triggered after a PDF file has been successfully uploaded.  |
+| `document-saved`          | Triggered after the current PDF file has been saved.        |
+| `document-updated`        | Triggered after the current PDF file has been updated.      |
+| `document-printed`        | Triggered after the current PDF file has been printed.      |
+| `signature-added`         | Triggered after a signature has been added to the document. |
+| `signature-click-outside` | Triggered after a user clicked outside the signature area.  |
 
 ```typescript
 const viewer = new PDFViewer({
@@ -231,6 +232,9 @@ window.addEventListener("message", async (event) => {
       break;
     case Event.SignatureAdded:
       console.log("Triggered after a signature has been added to the document.");
+      break;
+    case Event.SignatureClickOutside:
+      console.log("Triggered after a user clicked outside the signature area.");
       break;
   }
 });

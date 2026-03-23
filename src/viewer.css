@@ -3652,6 +3652,20 @@
                   mask-image:var(--comment-edit-button-icon);
         }
 
+.icon:is(:is(:is(:is(.annotationEditorLayer :is(.freeTextEditor,.inkEditor,.stampEditor,.highlightEditor,.signatureEditor),.textLayer) .editToolbar) .buttons) .basic)::before{
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          background-color:transparent;
+          color:var(--editor-toolbar-fg-color);
+          font-size:14px;
+        }
+
+.icon:is(:is(:is(:is(.annotationEditorLayer :is(.freeTextEditor,.inkEditor,.stampEditor,.highlightEditor,.signatureEditor),.textLayer) .editToolbar) .buttons) .basic):hover::before{
+          background-color:transparent;
+          color:var(--editor-toolbar-hover-fg-color);
+        }
+
 :is(:is(:is(.annotationEditorLayer :is(.freeTextEditor,.inkEditor,.stampEditor,.highlightEditor,.signatureEditor),.textLayer) .editToolbar) .buttons)  > *{
         height:var(--editor-toolbar-height);
       }
@@ -5985,6 +5999,10 @@ body.wait::before{
 
 .icon-clear::before{
   content:"\f00d";
+}
+
+.icon-check::before{
+  content:"\f00c";
 }
 
 .icon-print::before{

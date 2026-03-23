@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.4.178
- * pdfjsBuild = 97ff4b67c
+ * pdfjsVersion = 5.4.181
+ * pdfjsBuild = 441bd4ccf
  */
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
@@ -11687,7 +11687,7 @@ class PDFViewer {
   #textLayerMode = TextLayerMode.ENABLE;
   #viewerAlert = null;
   constructor(options) {
-    const viewerVersion = "5.4.178";
+    const viewerVersion = "5.4.181";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -13945,6 +13945,7 @@ class SignatureManager {
       source: this,
       mode: AnnotationEditorType.NONE
     });
+    this.#currentEditor.select();
     this.destroy();
     this.#signatureToolbarButton.classList.remove("toggled");
   }
@@ -13995,10 +13996,9 @@ class SignatureManager {
       }
     });
     this.#currentEditor.addSignature(data, DEFAULT_HEIGHT_IN_PAGE, this.#description.value, null);
-    this.#cancel();
-    window.parent.postMessage({
-      type: "signature-added"
-    });
+    this.#currentEditor.parent.setSelected(this.#currentEditor);
+    this.#finish();
+    this.#signatureToolbarButton.classList.remove("toggled");
   }
   destroy() {
     this.#uiManager = null;
@@ -16680,8 +16680,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.4.178";
-const pdfjsBuild = "97ff4b67c";
+const pdfjsVersion = "5.4.181";
+const pdfjsBuild = "441bd4ccf";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

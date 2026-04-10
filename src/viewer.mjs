@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.4.184
- * pdfjsBuild = 9b6039941
+ * pdfjsVersion = 5.4.185
+ * pdfjsBuild = 595d9d53e
  */
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
@@ -11687,7 +11687,7 @@ class PDFViewer {
   #textLayerMode = TextLayerMode.ENABLE;
   #viewerAlert = null;
   constructor(options) {
-    const viewerVersion = "5.4.184";
+    const viewerVersion = "5.4.185";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -15149,6 +15149,9 @@ const PDFViewerApplication = {
     if (!this.pdfLoadingTask) {
       return;
     }
+    this.pdfViewer.annotationEditorMode = {
+      mode: AnnotationEditorType.NONE
+    };
     if (this.pdfDocument?.annotationStorage.size > 0 && this._annotationStorageModified) {
       try {
         await this.save();
@@ -16680,8 +16683,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.4.184";
-const pdfjsBuild = "9b6039941";
+const pdfjsVersion = "5.4.185";
+const pdfjsBuild = "595d9d53e";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

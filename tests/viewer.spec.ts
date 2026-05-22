@@ -249,6 +249,76 @@ test('selects text in the document', async ({ page }) => {
   await page.mouse.up();
 });
 
+test('startSignatureFlow opens the dialog with the prefilled name', async ({ page }) => {
+  await page.goto(`file://${BASE64_DOCUMENT}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  const signatureModal = iframe.getByRole('dialog');
+  const signatureCanvas = signatureModal.getByRole('textbox', { name: 'Type your signature' });
+
+  // Wait until the viewer is fully initialised before invoking the API.
+  await waitForViewerReady(page);
+
+  await page.evaluate(() => (window as any).viewer.startSignatureFlow({ name: 'Jane Doe' }));
+
+  await expect(signatureModal).toBeVisible();
+  await expect(signatureCanvas).toHaveValue('Jane Doe');
+});
+
+test('cancelSignatureFlow closes the dialog and removes the placeholder editor', async ({ page }) => {
+  await page.goto(`file://${BASE64_DOCUMENT}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  const signatureModal = iframe.getByRole('dialog');
+  const editorLayer = iframe.locator('.signatureEditing');
+
+  await waitForViewerReady(page);
+
+  await page.evaluate(() => (window as any).viewer.startSignatureFlow({ name: 'Jane Doe' }));
+  await expect(signatureModal).toBeVisible();
+
+  await page.evaluate(() => (window as any).viewer.cancelSignatureFlow());
+
+  await expect(signatureModal).toBeHidden();
+  await expect(editorLayer).toBeHidden();
+});
+
+test('startSignatureFlow can be re-invoked after cancelSignatureFlow', async ({ page }) => {
+  await page.goto(`file://${BASE64_DOCUMENT}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  const signatureModal = iframe.getByRole('dialog');
+  const signatureCanvas = signatureModal.getByRole('textbox', { name: 'Type your signature' });
+
+  await waitForViewerReady(page);
+
+  // First cycle.
+  await page.evaluate(() => (window as any).viewer.startSignatureFlow({ name: 'First' }));
+  await expect(signatureModal).toBeVisible();
+  await expect(signatureCanvas).toHaveValue('First');
+
+  await page.evaluate(() => (window as any).viewer.cancelSignatureFlow());
+  await expect(signatureModal).toBeHidden();
+
+  // Give the deferred dialog "close" event and any pending updateMode
+  // microtasks time to flush before the second cycle.
+  await page.waitForTimeout(100);
+
+  // Second cycle — guard against the updateMode capability race.
+  await page.evaluate(() => (window as any).viewer.startSignatureFlow({ name: 'Second' }));
+  await expect(signatureModal).toBeVisible();
+  await expect(signatureCanvas).toHaveValue('Second');
+});
+
+const waitForViewerReady = async (page: Page) => {
+  // The iframe is set up asynchronously inside the PDFViewer constructor;
+  // wait until PDFViewerApplication is exposed before invoking the API.
+  await page.waitForFunction(() => {
+    const iframe = document.querySelector('iframe');
+    return Boolean((iframe?.contentWindow as any)?.PDFViewerApplication);
+  });
+};
+
 const testToolbar = async (page: Page) => {
   const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
   const toolbar = iframe.locator('#toolbarViewer');

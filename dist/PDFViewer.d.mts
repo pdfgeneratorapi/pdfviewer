@@ -18,6 +18,7 @@ declare enum Event {
     DocumentSaved = "document-saved",
     DocumentPrinted = "document-printed",
     SignatureAdded = "signature-added",
+    SignatureCancelled = "signature-cancelled",
     SignatureClickOutside = "signature-click-outside",
     DocumentUpdated = "document-updated"
 }
@@ -32,10 +33,14 @@ interface PDFViewerOptions {
     readonly scaleDropdown: boolean;
     readonly search: boolean;
     readonly signature: boolean;
+    readonly signatureButton: boolean;
     readonly print: boolean;
     readonly download: boolean;
     readonly upload: boolean;
     readonly sidebar: boolean;
+}
+interface SignatureFlowParams {
+    readonly name: string;
 }
 declare class PDFViewer {
     private readonly container;
@@ -79,6 +84,16 @@ declare class PDFViewer {
      */
     getBase64: () => Promise<string>;
     /**
+     * Starts the signature flow inside the viewer.
+     *
+     * @param params - SignatureFlowParams
+     */
+    startSignatureFlow: (params: SignatureFlowParams) => Promise<void>;
+    /**
+     * Cancels a signature flow previously started via startSignatureFlow.
+     */
+    cancelSignatureFlow: () => Promise<void>;
+    /**
      * Renders a PDF document using the PDF.js API
      *
      * @param documentParams - OpenDocumentParams
@@ -111,4 +126,4 @@ declare class PDFViewer {
     private pdfJsApplication;
 }
 
-export { Event, PDFViewer, type PDFViewerOptions, type PDFViewerParams, Scale, Theme, type ToolbarFontSize, type ToolbarIconSize };
+export { Event, PDFViewer, type PDFViewerOptions, type PDFViewerParams, Scale, type SignatureFlowParams, Theme, type ToolbarFontSize, type ToolbarIconSize };

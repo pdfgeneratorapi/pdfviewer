@@ -28,6 +28,7 @@ enum Event {
   DocumentSaved = "document-saved",
   DocumentPrinted = "document-printed",
   SignatureAdded = "signature-added",
+  SignatureCancelled = "signature-cancelled",
   SignatureClickOutside = "signature-click-outside",
   DocumentUpdated = "document-updated",
 }
@@ -53,6 +54,7 @@ interface PDFViewerOptions {
   readonly scaleDropdown: boolean;
   readonly search: boolean;
   readonly signature: boolean;
+  readonly signatureButton: boolean;
   readonly print: boolean;
   readonly download: boolean;
   readonly upload: boolean;
@@ -62,6 +64,10 @@ interface PDFViewerOptions {
 interface OpenDocumentParams {
   url?: string | undefined;
   data?: string | undefined;
+}
+
+interface SignatureFlowParams {
+  readonly name: string;
 }
 
 interface PDFViewerApplication {
@@ -84,6 +90,10 @@ interface PDFViewerApplication {
   disableUploading(): void;
   showSidebar(): void;
   hideSidebar(): void;
+  showSignatureButton(): void;
+  hideSignatureButton(): void;
+  startSignatureFlow(params: SignatureFlowParams): Promise<void>;
+  cancelSignatureFlow(): void;
   getBase64Document(): Promise<string>;
 }
 
@@ -121,6 +131,7 @@ class PDFViewer {
     scaleDropdown: true,
     search: true,
     signature: false,
+    signatureButton: true,
     print: true,
     download: true,
     upload: true,
@@ -185,6 +196,32 @@ class PDFViewer {
   };
 
   /**
+   * Starts the signature flow inside the viewer.
+   *
+   * @param params - SignatureFlowParams
+   */
+  public startSignatureFlow = async (params: SignatureFlowParams): Promise<void> => {
+    if (!this.isIframeLoaded) {
+      throw new Error("PDFViewer error: signature flow can not start - iframe is not loaded. Call loadUrl or loadBase64 first.");
+    }
+
+    const pdfjsApp = await this.pdfJsApplication();
+    await pdfjsApp.startSignatureFlow({ name: params.name });
+  };
+
+  /**
+   * Cancels a signature flow previously started via startSignatureFlow.
+   */
+  public cancelSignatureFlow = async (): Promise<void> => {
+    if (!this.isIframeLoaded) {
+      return;
+    }
+
+    const pdfjsApp = await this.pdfJsApplication();
+    pdfjsApp.cancelSignatureFlow();
+  };
+
+  /**
    * Renders a PDF document using the PDF.js API
    *
    * @param documentParams - OpenDocumentParams
@@ -219,6 +256,7 @@ class PDFViewer {
     this.options.scaleDropdown ? pdfjsApp.showScaleDropdown() : pdfjsApp.hideScaleDropdown();
     this.options.search ? pdfjsApp.enableTextSearch() : pdfjsApp.disableTextSearch();
     this.options.signature ? pdfjsApp.enableSignature() : pdfjsApp.disableSignature();
+    this.options.signatureButton ? pdfjsApp.showSignatureButton() : pdfjsApp.hideSignatureButton();
     this.options.print ? pdfjsApp.enablePrinting() : pdfjsApp.disablePrinting();
     this.options.download ? pdfjsApp.enableDownloading() : pdfjsApp.disableDownloading();
     this.options.upload ? pdfjsApp.enableUploading() : pdfjsApp.disableUploading();
@@ -308,4 +346,4 @@ class PDFViewer {
   };
 }
 
-export { PDFViewer, PDFViewerOptions, PDFViewerParams, Event, Scale, Theme, ToolbarFontSize, ToolbarIconSize };
+export { PDFViewer, PDFViewerOptions, PDFViewerParams, SignatureFlowParams, Event, Scale, Theme, ToolbarFontSize, ToolbarIconSize };

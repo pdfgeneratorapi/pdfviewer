@@ -2484,6 +2484,7 @@
             -webkit-user-select:none;
                -moz-user-select:none;
                     user-select:none;
+            touch-action:none;
           }
 
 #addSignatureDrawContainer:is(:is(:is(#addSignatureDialog .mainContainer) #addSignatureActionContainer) > [role="tabpanel"])  > svg{
@@ -2493,6 +2494,7 @@
             stroke-linecap:round;
             stroke-linejoin:round;
             stroke-miterlimit:10;
+            touch-action:none;
           }
 
 :is(#addSignatureDrawContainer:is(:is(:is(#addSignatureDialog .mainContainer) #addSignatureActionContainer) > [role="tabpanel"]) > svg):hover{

@@ -21,12 +21,12 @@
  */
 
 /**
- * pdfjsVersion = 5.4.188
- * pdfjsBuild = 9791e7957
+ * pdfjsVersion = 5.4.189
+ * pdfjsBuild = 0001324a2
  */
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
-/******/ 
+/******/
 /************************************************************************/
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
@@ -39,12 +39,12 @@
 /******/ 		}
 /******/ 	};
 /******/ })();
-/******/ 
+/******/
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
 /******/ (() => {
 /******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ })();
-/******/ 
+/******/
 /************************************************************************/
 var __webpack_exports__ = {};
 
@@ -11687,7 +11687,7 @@ class PDFViewer {
   #textLayerMode = TextLayerMode.ENABLE;
   #viewerAlert = null;
   constructor(options) {
-    const viewerVersion = "5.4.188";
+    const viewerVersion = "5.4.189";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -13752,7 +13752,7 @@ class SignatureManager {
         drawPoints.push(x, y);
         this.#drawPath.setAttribute("d", this.#drawPathString);
       }, listenerDrawOptions);
-      this.#drawSVG.addEventListener("pointerup", evt => {
+      const endStroke = evt => {
         const {
           pointerId: pId
         } = evt;
@@ -13761,13 +13761,18 @@ class SignatureManager {
         }
         currentPointerId = NaN;
         evt.preventDefault();
-        this.#drawSVG.releasePointerCapture(pId);
+        if (this.#drawSVG.hasPointerCapture(pId)) {
+          this.#drawSVG.releasePointerCapture(pId);
+        }
         finishDrawAC.abort();
         if (this.#drawPoints.length === 2) {
           this.#drawPathString += `L${this.#drawPoints[0]} ${this.#drawPoints[1]}`;
           this.#drawPath.setAttribute("d", this.#drawPathString);
         }
-      }, listenerDrawOptions);
+      };
+      this.#drawSVG.addEventListener("pointerup", endStroke, listenerDrawOptions);
+      this.#drawSVG.addEventListener("pointerleave", endStroke, listenerDrawOptions);
+      this.#drawSVG.addEventListener("pointercancel", endStroke, listenerDrawOptions);
     };
     if (this.#drawCurves) {
       this.#drawSVG.addEventListener("pointerdown", drawCallback, options);
@@ -16727,8 +16732,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.4.188";
-const pdfjsBuild = "9791e7957";
+const pdfjsVersion = "5.4.189";
+const pdfjsBuild = "0001324a2";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

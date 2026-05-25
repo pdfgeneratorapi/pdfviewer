@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.4.185
- * pdfjsBuild = 595d9d53e
+ * pdfjsVersion = 5.4.188
+ * pdfjsBuild = 9791e7957
  */
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
@@ -11687,7 +11687,7 @@ class PDFViewer {
   #textLayerMode = TextLayerMode.ENABLE;
   #viewerAlert = null;
   constructor(options) {
-    const viewerVersion = "5.4.185";
+    const viewerVersion = "5.4.188";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -13430,6 +13430,7 @@ class SignatureManager {
   #currentTab = null;
   #currentTabAC = null;
   #hasDescriptionChanged = false;
+  #prefilledName = "";
   #eventBus;
   #l10n;
   #overlayManager;
@@ -13924,6 +13925,9 @@ class SignatureManager {
   getSignature(params) {
     return this.open(params);
   }
+  setPrefilledName(name) {
+    this.#prefilledName = name || "";
+  }
   async open({
     uiManager,
     editor
@@ -13939,6 +13943,16 @@ class SignatureManager {
     const tabType = this.#tabButtons.get("type");
     tabType.focus();
     tabType.click();
+    if (this.#prefilledName) {
+      this.#typeInput.value = this.#prefilledName;
+      this.#prefilledName = "";
+      this.#tabsToAltText.get("type").default = this.#description.value = this.#typeInput.value;
+      this.#clearDescription.disabled = this.#typeInput.value === "";
+      this.#disableButtons(this.#typeInput.value);
+    }
+  }
+  cancel() {
+    this.#cancel();
   }
   #cancel() {
     this.#eventBus.dispatch("switchannotationeditormode", {
@@ -13948,6 +13962,9 @@ class SignatureManager {
     this.#currentEditor.select();
     this.destroy();
     this.#signatureToolbarButton.classList.remove("toggled");
+    window.parent.postMessage({
+      type: "signature-cancelled"
+    });
   }
   #finish() {
     this.#overlayManager.closeIfActive(this.#dialog);
@@ -14645,6 +14662,7 @@ const PDFViewerApplication = {
     }
     const signatureManager = AppOptions.get("enableSignatureEditor") && appConfig.addSignatureDialog ? new SignatureManager(appConfig.addSignatureDialog, overlayManager, l10n, externalServices.createSignatureStorage(eventBus, abortSignal), eventBus) : null;
     const commentManager = AppOptions.get("enableComment") && appConfig.editCommentDialog ? new CommentManager(appConfig.editCommentDialog, overlayManager) : null;
+    this.signatureManager = signatureManager;
     const enableHWA = AppOptions.get("enableHWA"),
       maxCanvasPixels = AppOptions.get("maxCanvasPixels"),
       maxCanvasDim = AppOptions.get("maxCanvasDim"),
@@ -14984,17 +15002,43 @@ const PDFViewerApplication = {
     this.findBar.toggleButton?.classList.add("hidden");
   },
   enableSignature() {
-    this.toolbar.signature = true;
-    this.appConfig.toolbar?.signature?.classList.remove("hidden");
-    this.appConfig.secondaryToolbar?.signatureButton.classList.remove("hidden");
+    this.showSignatureButton();
     this.appConfig.addSignatureDialog.dialog.classList.remove("hidden");
   },
   disableSignature() {
+    this.hideSignatureButton();
+    this.appConfig.addSignatureDialog.dialog.classList.add("hidden");
+    this.overlayManager.closeIfActive(this.appConfig.addSignatureDialog.dialog);
+  },
+  showSignatureButton() {
+    this.toolbar.signature = true;
+    this.appConfig.toolbar?.signature?.classList.remove("hidden");
+    this.appConfig.secondaryToolbar?.signatureButton.classList.remove("hidden");
+  },
+  hideSignatureButton() {
     this.toolbar.signature = false;
     this.appConfig.toolbar?.signature?.classList.add("hidden");
     this.appConfig.secondaryToolbar?.signatureButton.classList.add("hidden");
-    this.appConfig.addSignatureDialog.dialog.classList.add("hidden");
-    this.overlayManager.closeIfActive(this.appConfig.addSignatureDialog.dialog);
+  },
+  async startSignatureFlow({
+    name
+  } = {}) {
+    if (!this.signatureManager) {
+      return;
+    }
+    this.signatureManager.setPrefilledName(name || "");
+    await this.eventBus.dispatch("switchannotationeditormode", {
+      source: this,
+      mode: AnnotationEditorType.SIGNATURE
+    });
+    await this.eventBus.dispatch("switchannotationeditorparams", {
+      source: this,
+      type: AnnotationEditorParamsType.CREATE,
+      value: null
+    });
+  },
+  cancelSignatureFlow() {
+    this.signatureManager?.cancel();
   },
   enablePrinting() {
     this.toolbar.printing = true;
@@ -16683,8 +16727,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.4.185";
-const pdfjsBuild = "595d9d53e";
+const pdfjsVersion = "5.4.188";
+const pdfjsBuild = "9791e7957";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

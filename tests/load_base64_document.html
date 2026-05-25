@@ -9,7 +9,7 @@
         <script>
             const { PDFViewer } = PDFGeneratorApi;
 
-            const viewer = new PDFViewer({
+            window.viewer = new PDFViewer({
                 container: document.getElementById("id"),
                 options: {
                     signature: true,
@@ -34,7 +34,7 @@
                 'MDAwIG4gCjAwMDAwMDAzODAgMDAwMDAgbiAKdHJhaWxlcgo8PAogIC9TaXplIDYKICAvUm9v' +
                 'dCAxIDAgUgo+PgpzdGFydHhyZWYKNDkyCiUlRU9G';
 
-            viewer.loadBase64(base64document);
+            window.viewer.loadBase64(base64document);
         </script>
     </body>
 </html>

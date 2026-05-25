@@ -18,6 +18,8 @@ offering features such as document loading via URL and base64 encoded strings.
 * `loadUrl(string)` - load PDF from an URL
 * `loadBase64(string)` - load PDF from a base64 encoded string
 * `getBase64()` - get base64 encoded PDF
+* `startSignatureFlow(params)` - open the signature dialog programmatically
+* `cancelSignatureFlow()` - close the signature dialog
 * `setOptions(object)` - update options
   * `theme`: Theme - set viewer theme
   * `initialScale`: Scale - set initial page scale
@@ -25,7 +27,8 @@ offering features such as document loading via URL and base64 encoded strings.
   * `toolbarIconSize`: number - set toolbar icon size
   * `scaleDropdown`: boolean - display scaling options
   * `search`: boolean - enable search button
-  * `signature`: boolean - enable signature button
+  * `signature`: boolean - enable signature feature (toolbar button and dialog)
+  * `signatureButton`: boolean - show/hide the signature toolbar button
   * `print`: boolean - enable print button
   * `download`: boolean - enable download button
   * `upload`: boolean - enable upload file button
@@ -112,6 +115,8 @@ const base64encodedPdf =
 viewer.loadBase64(base64encodedPdf);
 ```
 
+Listen for the lifecycle via `postMessage` events: `signature-added`, `signature-cancelled`, `signature-click-outside`. See [Available events](#available-events).
+
 ## Available options
 PDFViewer theme:
 * **theme**: (`Theme.Light` | `Theme.Dark` | `Theme.PDFApi`)
@@ -141,6 +146,10 @@ Searching:
 Adding signature:
 * **signature**: (`boolean`):
   * *Default*: false
+
+Signature toolbar button:
+* **signatureButton**: (`boolean`):
+  * *Default*: true
 
 Printing:
 * **print**: (`boolean`):
@@ -172,6 +181,7 @@ const viewer = new PDFViewer({
     scaleDropdown: true,
     search: true,
     signature: true,
+    signatureButton: true,
     print: true,
     download: true,
     upload: true,
@@ -188,6 +198,7 @@ viewer.setOptions({
   scaleDropdown: true,
   search: true,
   signature: true,
+  signatureButton: true,
   print: true,
   download: true,
   upload: true,
@@ -207,6 +218,7 @@ field (matching one of the event names).
 | `document-updated`        | Triggered after the current PDF file has been updated.      |
 | `document-printed`        | Triggered after the current PDF file has been printed.      |
 | `signature-added`         | Triggered after a signature has been added to the document. |
+| `signature-cancelled`     | Triggered after a signature flow has been cancelled.        |
 | `signature-click-outside` | Triggered after a user clicked outside the signature area.  |
 
 ```typescript
@@ -232,6 +244,9 @@ window.addEventListener("message", async (event) => {
       break;
     case Event.SignatureAdded:
       console.log("Triggered after a signature has been added to the document.");
+      break;
+    case Event.SignatureCancelled:
+      console.log("Triggered after a signature flow has been cancelled.");
       break;
     case Event.SignatureClickOutside:
       console.log("Triggered after a user clicked outside the signature area.");

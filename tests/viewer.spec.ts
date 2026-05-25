@@ -249,6 +249,65 @@ test('selects text in the document', async ({ page }) => {
   await page.mouse.up();
 });
 
+test('mobile view draws a continuous signature', async ({ browser, browserName }) => {
+  test.skip(browserName === 'firefox');
+
+  const context = await browser.newContext({
+    userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+
+  const page = await context.newPage();
+  await page.goto(`file://${BASE64_DOCUMENT}`);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  await iframe.getByRole('button', { name: 'Signature' }).click();
+
+  const signatureModal = iframe.getByRole('dialog');
+  const signatureDrawTab = signatureModal.getByRole('tab', { name: 'Draw', exact: true });
+  const signatureCanvas = signatureModal.getByRole('img', { name: 'Draw your signature' });
+  const signatureAddButton = signatureModal.getByRole('button', { name: 'Add', exact: true });
+  const signatureAcceptButton = iframe.locator('.acceptButton');
+  const signature = iframe.locator('.signatureEditor');
+  const editorLayer = iframe.locator('.signatureEditing');
+  const drawPath = iframe.locator('#addSignatureDraw path');
+
+  await expect(signatureModal.getByText('Add a signature')).toBeVisible();
+  await signatureDrawTab.click();
+  await expect(signatureCanvas).toBeVisible();
+
+  const svgElement = await signatureCanvas.elementHandle();
+  const signatureBox = await svgElement?.boundingBox();
+  if (!signatureBox) {
+    throw new Error('The drawing canvas is not rendered.');
+  }
+
+  const { x, y, width, height } = signatureBox;
+  const startX = x + width / 4;
+  const startY = y + height / 2;
+  const endX = x + (3 * width) / 4;
+  const endY = y + height / 2;
+
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  await page.mouse.move(endX, endY, { steps: 12 });
+  await page.mouse.up();
+
+  // A path was actually drawn (continuous stroke, not just a starting M).
+  const drawnPath = await drawPath.getAttribute('d');
+  expect(drawnPath).toBeTruthy();
+  expect(drawnPath?.length ?? 0).toBeGreaterThan('M0 0'.length);
+
+  await signatureAddButton.click();
+  await expect(signature).toBeVisible();
+  await expect(editorLayer).toBeVisible();
+
+  await signatureAcceptButton.click();
+  await expect(editorLayer).toBeHidden();
+});
+
 test('startSignatureFlow opens the dialog with the prefilled name', async ({ page }) => {
   await page.goto(`file://${BASE64_DOCUMENT}`);
 

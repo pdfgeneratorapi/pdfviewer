@@ -276,6 +276,12 @@ class PDFViewer {
     iframe.style.width = "100%";
     iframe.style.height = "100%";
     iframe.style.border = "none";
+
+    iframe.addEventListener("load", async () => {
+      this.isIframeLoaded = true;
+      await this.applyOptions();
+    });
+
     this.container.appendChild(iframe);
 
     const iframeWindow = iframe.contentWindow;
@@ -290,10 +296,6 @@ class PDFViewer {
       this.loadScripts(iframeDocument);
     }
 
-    iframe.addEventListener("load", async () => {
-      this.isIframeLoaded = true;
-      await this.applyOptions();
-    });
   };
 
   /**

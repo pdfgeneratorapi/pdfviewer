@@ -34,7 +34,9 @@
                 'MDAwIG4gCjAwMDAwMDAzODAgMDAwMDAgbiAKdHJhaWxlcgo8PAogIC9TaXplIDYKICAvUm9v' +
                 'dCAxIDAgUgo+PgpzdGFydHhyZWYKNDkyCiUlRU9G';
 
-            window.viewer.loadBase64(base64document);
+            document.addEventListener("DOMContentLoaded", () => {
+                window.viewer.loadBase64(base64document);
+            });
         </script>
     </body>
 </html>

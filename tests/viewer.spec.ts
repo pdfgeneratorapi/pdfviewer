@@ -39,7 +39,8 @@ test('adds a typed signature to the document', async ({ page }) => {
   await page.goto(`file://${BASE64_DOCUMENT}`);
 
   const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
-  await iframe.getByRole('button', { name: 'Signature' }).click();
+  await waitForViewerReady(page);
+  await page.evaluate(() => (window as any).viewer.startSignatureFlow({ name: '' }));
 
   const signatureModal = iframe.getByRole('dialog');
   const signatureCanvas = signatureModal.getByRole('textbox', { name: 'Type your signature' });
@@ -63,7 +64,8 @@ test('adds a drawn signature to the document', async ({ page }) => {
   await page.goto(`file://${BASE64_DOCUMENT}`);
 
   const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
-  await iframe.getByRole('button', { name: 'Signature' }).click();
+  await waitForViewerReady(page);
+  await page.evaluate(() => (window as any).viewer.startSignatureFlow({ name: '' }));
 
   const signatureModal = iframe.getByRole('dialog');
   const signatureCanvas = signatureModal.getByRole('img', { name: 'Draw your signature' });
@@ -108,7 +110,8 @@ test('adds an uploaded image signature to the document', async ({ page }) => {
   await page.goto(`file://${BASE64_DOCUMENT}`);
 
   const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
-  await iframe.getByRole('button', { name: 'Signature' }).click();
+  await waitForViewerReady(page);
+  await page.evaluate(() => (window as any).viewer.startSignatureFlow({ name: '' }));
 
   const signatureModal = iframe.getByRole('dialog');
   const signatureAddButton = signatureModal.getByRole('button', { name: 'Add' });
@@ -140,7 +143,8 @@ test('removes the signature', async ({ page }) => {
   const iframeElement = page.locator(`#${IFRAME_ID}`);
   const iframe = await iframeElement.contentFrame();
 
-  await iframe.getByRole('button', { name: 'Signature' }).click();
+  await waitForViewerReady(page);
+  await page.evaluate(() => (window as any).viewer.startSignatureFlow({ name: '' }));
 
   const signatureModal = iframe.getByRole('dialog');
   const signatureCanvas = signatureModal.getByRole('textbox', { name: 'Type your signature' });
@@ -263,7 +267,8 @@ test('mobile view draws a continuous signature', async ({ browser, browserName }
   await page.goto(`file://${BASE64_DOCUMENT}`);
 
   const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
-  await iframe.getByRole('button', { name: 'Signature' }).click();
+  await waitForViewerReady(page);
+  await page.evaluate(() => (window as any).viewer.startSignatureFlow({ name: '' }));
 
   const signatureModal = iframe.getByRole('dialog');
   const signatureDrawTab = signatureModal.getByRole('tab', { name: 'Draw', exact: true });
@@ -370,11 +375,16 @@ test('startSignatureFlow can be re-invoked after cancelSignatureFlow', async ({ 
 });
 
 const waitForViewerReady = async (page: Page) => {
-  // The iframe is set up asynchronously inside the PDFViewer constructor;
-  // wait until PDFViewerApplication is exposed before invoking the API.
   await page.waitForFunction(() => {
     const iframe = document.querySelector('iframe');
-    return Boolean((iframe?.contentWindow as any)?.PDFViewerApplication);
+
+    if (!(iframe?.contentWindow as any)?.PDFViewerApplication) {
+      return false;
+    }
+
+    const button = iframe?.contentDocument?.getElementById('signature') as HTMLButtonElement;
+
+    return Boolean(button) && !button.disabled;
   });
 };
 

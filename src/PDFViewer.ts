@@ -27,6 +27,7 @@ enum Event {
   DocumentUploaded = "document-uploaded",
   DocumentSaved = "document-saved",
   DocumentPrinted = "document-printed",
+  SignatureRequested = "signature-requested",
   SignatureAdded = "signature-added",
   SignatureCancelled = "signature-cancelled",
   SignatureClickOutside = "signature-click-outside",

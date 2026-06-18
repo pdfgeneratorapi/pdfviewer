@@ -115,7 +115,7 @@ const base64encodedPdf =
 viewer.loadBase64(base64encodedPdf);
 ```
 
-Listen for the lifecycle via `postMessage` events: `signature-added`, `signature-cancelled`, `signature-click-outside`. See [Available events](#available-events).
+Listen for the lifecycle via `postMessage` events: `signature-requested`, `signature-added`, `signature-cancelled`, `signature-click-outside`. See [Available events](#available-events).
 
 ## Available options
 PDFViewer theme:
@@ -217,6 +217,7 @@ field (matching one of the event names).
 | `document-saved`          | Triggered after the current PDF file has been saved.        |
 | `document-updated`        | Triggered after the current PDF file has been updated.      |
 | `document-printed`        | Triggered after the current PDF file has been printed.      |
+| `signature-requested`     | Triggered when the signer requests to sign the document.    |
 | `signature-added`         | Triggered after a signature has been added to the document. |
 | `signature-cancelled`     | Triggered after a signature flow has been cancelled.        |
 | `signature-click-outside` | Triggered after a user clicked outside the signature area.  |
@@ -241,6 +242,9 @@ window.addEventListener("message", async (event) => {
       break;
     case Event.DocumentPrinted:
       console.log("Triggered after the current PDF file has been printed.");
+      break;
+    case Event.SignatureRequested:
+      console.log("Triggered when the signer requests to sign the document.");
       break;
     case Event.SignatureAdded:
       console.log("Triggered after a signature has been added to the document.");

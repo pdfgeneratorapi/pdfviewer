@@ -21,12 +21,12 @@
  */
 
 /**
- * pdfjsVersion = 5.4.189
- * pdfjsBuild = 0001324a2
+ * pdfjsVersion = 5.4.190
+ * pdfjsBuild = a8ea1ebe8
  */
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
-/******/
+/******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
@@ -39,12 +39,12 @@
 /******/ 		}
 /******/ 	};
 /******/ })();
-/******/
+/******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
 /******/ (() => {
 /******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ })();
-/******/
+/******/ 
 /************************************************************************/
 var __webpack_exports__ = {};
 
@@ -4168,13 +4168,10 @@ class AnnotationEditorParams {
       this.setAttribute("aria-pressed", !checked);
       dispatchEvent("HIGHLIGHT_SHOW_ALL", !checked);
     });
-    editorSignatureButton.addEventListener("click", async function () {
-      editorSignatureButton.classList.add("toggled");
-      await eventBus.dispatch("switchannotationeditormode", {
-        source: this,
-        mode: AnnotationEditorType.SIGNATURE
+    editorSignatureButton.addEventListener("click", function () {
+      window.parent.postMessage({
+        type: "signature-requested"
       });
-      await dispatchEvent("CREATE");
     });
     eventBus._on("annotationeditorparamschanged", evt => {
       for (const [type, value] of evt.details) {
@@ -11687,7 +11684,7 @@ class PDFViewer {
   #textLayerMode = TextLayerMode.ENABLE;
   #viewerAlert = null;
   constructor(options) {
-    const viewerVersion = "5.4.189";
+    const viewerVersion = "5.4.190";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -13277,7 +13274,6 @@ class PDFViewer {
 
 ;//./secondary_toolbar.js
 
-
 class SecondaryToolbar {
   #opts;
   constructor(options, eventBus) {
@@ -13343,13 +13339,8 @@ class SecondaryToolbar {
           });
         }
         if (eventName === "signature") {
-          await eventBus.dispatch("switchannotationeditormode", {
-            source: this,
-            mode: AnnotationEditorType.SIGNATURE
-          });
-          await eventBus.dispatch("switchannotationeditorparams", {
-            source: this,
-            type: AnnotationEditorParamsType.CREATE
+          window.parent.postMessage({
+            type: "signature-requested"
           });
         }
         if (close) {
@@ -16732,8 +16723,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.4.189";
-const pdfjsBuild = "0001324a2";
+const pdfjsVersion = "5.4.190";
+const pdfjsBuild = "a8ea1ebe8";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

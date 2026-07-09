@@ -7,6 +7,11 @@ const REMOTE_DOCUMENT = path.resolve(__dirname, 'load_remote_document.html');
 const BASE64_DOCUMENT = path.resolve(__dirname, 'load_base64_document.html');
 const BASE64_DOCUMENT_WITHOUT_SIDEBAR = path.resolve(__dirname, 'load_base64_document_without_sidebar.html');
 const EMPTY_DOCUMENT = path.resolve(__dirname, 'empty_document.html');
+const SIGNATURE_FIELDS_DOCUMENT = path.resolve(__dirname, 'load_signature_fields_document.html');
+const SIGNATURE_FIELDS_READONLY_DOCUMENT = path.resolve(__dirname, 'load_signature_fields_readonly_document.html');
+const DISCLOSING_FIELD = 'disclosing_party_signature';
+const VISIBLE_PLACEHOLDER = '.signatureWidgetAnnotation:not(.signatureFieldHidden)';
+const HIDDEN_PLACEHOLDER = '.signatureWidgetAnnotation.signatureFieldHidden';
 
 test('loads document from URL', async ({ page }) => {
   await page.goto(`file://${REMOTE_DOCUMENT}`);
@@ -373,6 +378,56 @@ test('startSignatureFlow can be re-invoked after cancelSignatureFlow', async ({ 
   await expect(signatureModal).toBeVisible();
   await expect(signatureCanvas).toHaveValue('Second');
 });
+
+test('renders a "Sign here" placeholder for every empty signature field', async ({ page }) => {
+  await page.goto(`file://${SIGNATURE_FIELDS_DOCUMENT}`);
+  await waitForSignatureFields(page);
+
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+  await expect(iframe.locator('.signaturePlaceholder')).toHaveCount(2);
+  await expect(iframe.locator(VISIBLE_PLACEHOLDER)).toHaveCount(2);
+});
+
+test('restricts signing to the active signature field', async ({ page }) => {
+  await page.goto(`file://${SIGNATURE_FIELDS_DOCUMENT}`);
+  await waitForSignatureFields(page);
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+
+  await page.evaluate(id => (window as any).viewer.setActiveSignatureField(id), DISCLOSING_FIELD);
+
+  await expect(iframe.locator(VISIBLE_PLACEHOLDER)).toHaveCount(1);
+  await expect(iframe.locator(HIDDEN_PLACEHOLDER)).toHaveCount(1);
+});
+
+test('shows every placeholder again once the active field is cleared', async ({ page }) => {
+  await page.goto(`file://${SIGNATURE_FIELDS_DOCUMENT}`);
+  await waitForSignatureFields(page);
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+
+  await page.evaluate(id => (window as any).viewer.setActiveSignatureField(id), DISCLOSING_FIELD);
+  await expect(iframe.locator(VISIBLE_PLACEHOLDER)).toHaveCount(1);
+
+  await page.evaluate(() => (window as any).viewer.setActiveSignatureField(null));
+  await expect(iframe.locator(VISIBLE_PLACEHOLDER)).toHaveCount(2);
+});
+
+test('hides every placeholder when signing is disabled', async ({ page }) => {
+  await page.goto(`file://${SIGNATURE_FIELDS_READONLY_DOCUMENT}`);
+  await waitForSignatureFields(page);
+  const iframe = page.locator(`#${IFRAME_ID}`).contentFrame();
+
+  await expect(iframe.locator('.signaturePlaceholder')).toHaveCount(2);
+  await expect(iframe.locator(HIDDEN_PLACEHOLDER)).toHaveCount(2);
+  await expect(iframe.locator(VISIBLE_PLACEHOLDER)).toHaveCount(0);
+});
+
+const waitForSignatureFields = async (page: Page) => {
+  await page.waitForFunction(() => {
+    const iframe = document.querySelector('iframe');
+    const count = iframe?.contentDocument?.querySelectorAll('.signaturePlaceholder').length ?? 0;
+    return count >= 2;
+  });
+};
 
 const waitForViewerReady = async (page: Page) => {
   await page.waitForFunction(() => {

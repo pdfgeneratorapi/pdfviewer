@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Test</title>
+    </head>
+    <body>
+        <div id="id" style="height: 1000px; width: 100%;"></div>
+        <script src="../dist/PDFViewer.iife.js"></script>
+        <script>
+            const { PDFViewer } = PDFGeneratorApi;
+
+            window.viewer = new PDFViewer({
+                container: document.getElementById("id"),
+                options: {
+                    signature: false,
+                }
+            });
+
+            const base64document =
+                'JVBERi0xLjcKJeLjz9MKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIg' +
+                'L0Fjcm9Gb3JtIDQgMCBSID4+CmVuZG9iagoyIDAgb2JqCjw8IC9UeXBlIC9QYWdlcyAvS2lk' +
+                'cyBbMyAwIFJdIC9Db3VudCAxID4+CmVuZG9iagozIDAgb2JqCjw8IC9UeXBlIC9QYWdlIC9Q' +
+                'YXJlbnQgMiAwIFIgL01lZGlhQm94IFswIDAgMzAwIDQwMF0gL1Jlc291cmNlcyA8PCA+PiAv' +
+                'QW5ub3RzIFs1IDAgUiA2IDAgUl0gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0ZpZWxkcyBbNSAw' +
+                'IFIgNiAwIFJdIC9TaWdGbGFncyAzID4+CmVuZG9iago1IDAgb2JqCjw8IC9GVCAvU2lnIC9U' +
+                'eXBlIC9Bbm5vdCAvU3VidHlwZSAvV2lkZ2V0IC9UIChkaXNjbG9zaW5nX3BhcnR5X3NpZ25h' +
+                'dHVyZSkgL1JlY3QgWzQwIDMwMCAyNjAgMzYwXSAvUCAzIDAgUiAvRiA0ID4+CmVuZG9iago2' +
+                'IDAgb2JqCjw8IC9GVCAvU2lnIC9UeXBlIC9Bbm5vdCAvU3VidHlwZSAvV2lkZ2V0IC9UIChy' +
+                'ZWNlaXZpbmdfcGFydHlfc2lnbmF0dXJlKSAvUmVjdCBbNDAgMTAwIDI2MCAxNjBdIC9QIDMg' +
+                'MCBSIC9GIDQgPj4KZW5kb2JqCnhyZWYKMCA3CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAw' +
+                'MDAxNSAwMDAwMCBuIAowMDAwMDAwMDgwIDAwMDAwIG4gCjAwMDAwMDAxMzcgMDAwMDAgbiAK' +
+                'MDAwMDAwMDI0NyAwMDAwMCBuIAowMDAwMDAwMzAyIDAwMDAwIG4gCjAwMDAwMDA0MzEgMDAw' +
+                'MDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA3IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo1NTkK' +
+                'JSVFT0Y=';
+
+            document.addEventListener("DOMContentLoaded", () => {
+                window.viewer.loadBase64(base64document);
+            });
+        </script>
+    </body>
+</html>

@@ -20,6 +20,7 @@ offering features such as document loading via URL and base64 encoded strings.
 * `getBase64()` - get base64 encoded PDF
 * `startSignatureFlow(params)` - open the signature dialog programmatically
 * `cancelSignatureFlow()` - close the signature dialog
+* `setActiveSignatureField(signatureId)` - activates the signature placeholder with the specified ID
 * `setOptions(object)` - update options
   * `theme`: Theme - set viewer theme
   * `initialScale`: Scale - set initial page scale

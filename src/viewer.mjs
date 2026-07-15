@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.4.190
- * pdfjsBuild = a8ea1ebe8
+ * pdfjsVersion = 5.4.192
+ * pdfjsBuild = 3c72c53e0
  */
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
@@ -93,6 +93,7 @@ const {
   setLayerDimensions,
   shadow,
   SignatureExtractor,
+  signatureFieldController,
   stopEvent,
   SupportedImageMimeTypes,
   TextLayer,
@@ -11684,7 +11685,7 @@ class PDFViewer {
   #textLayerMode = TextLayerMode.ENABLE;
   #viewerAlert = null;
   constructor(options) {
-    const viewerVersion = "5.4.190";
+    const viewerVersion = "5.4.192";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -14998,10 +14999,12 @@ const PDFViewerApplication = {
     this.findBar.toggleButton?.classList.add("hidden");
   },
   enableSignature() {
+    signatureFieldController.setSigningEnabled(true);
     this.showSignatureButton();
     this.appConfig.addSignatureDialog.dialog.classList.remove("hidden");
   },
   disableSignature() {
+    signatureFieldController.setSigningEnabled(false);
     this.hideSignatureButton();
     this.appConfig.addSignatureDialog.dialog.classList.add("hidden");
     this.overlayManager.closeIfActive(this.appConfig.addSignatureDialog.dialog);
@@ -15017,7 +15020,8 @@ const PDFViewerApplication = {
     this.appConfig.secondaryToolbar?.signatureButton.classList.add("hidden");
   },
   async startSignatureFlow({
-    name
+    name,
+    signatureId
   } = {}) {
     if (!this.signatureManager) {
       return;
@@ -15027,11 +15031,19 @@ const PDFViewerApplication = {
       source: this,
       mode: AnnotationEditorType.SIGNATURE
     });
+    if (signatureId) {
+      this.pdfViewer?.annotationEditorUIManager?.focusSignatureField(signatureId);
+    }
     await this.eventBus.dispatch("switchannotationeditorparams", {
       source: this,
       type: AnnotationEditorParamsType.CREATE,
       value: null
     });
+  },
+  setActiveSignatureField(signatureId) {
+    this._activeSignatureFieldId = signatureId || null;
+    signatureFieldController.setActiveField(this._activeSignatureFieldId);
+    this.pdfViewer?.annotationEditorUIManager?.setActiveSignatureField(this._activeSignatureFieldId);
   },
   cancelSignatureFlow() {
     this.signatureManager?.cancel();
@@ -15192,6 +15204,8 @@ const PDFViewerApplication = {
     this.pdfViewer.annotationEditorMode = {
       mode: AnnotationEditorType.NONE
     };
+    signatureFieldController.reset();
+    this._activeSignatureFieldId = null;
     if (this.pdfDocument?.annotationStorage.size > 0 && this._annotationStorageModified) {
       try {
         await this.save();
@@ -15896,6 +15910,15 @@ const PDFViewerApplication = {
       signal
     });
     eventBus._on("switchannotationeditormode", evt => pdfViewer.annotationEditorMode = evt, {
+      signal
+    });
+    eventBus._on("annotationeditoruimanager", ({
+      uiManager
+    }) => {
+      if (this._activeSignatureFieldId) {
+        uiManager.setActiveSignatureField(this._activeSignatureFieldId);
+      }
+    }, {
       signal
     });
     eventBus._on("print", this.triggerPrinting.bind(this), {
@@ -16723,8 +16746,8 @@ function beforeUnload(evt) {
 
 
 
-const pdfjsVersion = "5.4.190";
-const pdfjsBuild = "a8ea1ebe8";
+const pdfjsVersion = "5.4.192";
+const pdfjsBuild = "3c72c53e0";
 const AppConstants = {
   LinkTarget: LinkTarget,
   RenderingStates: RenderingStates,

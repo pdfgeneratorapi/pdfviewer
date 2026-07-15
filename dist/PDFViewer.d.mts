@@ -42,6 +42,7 @@ interface PDFViewerOptions {
 }
 interface SignatureFlowParams {
     readonly name: string;
+    readonly signatureId?: string | undefined;
 }
 declare class PDFViewer {
     private readonly container;
@@ -90,6 +91,12 @@ declare class PDFViewer {
      * @param params - SignatureFlowParams
      */
     startSignatureFlow: (params: SignatureFlowParams) => Promise<void>;
+    /**
+     * Restricts signing to a single signature field, matched by its id.
+     *
+     * @param signatureId - string | null
+     */
+    setActiveSignatureField: (signatureId: string | null) => Promise<void>;
     /**
      * Cancels a signature flow previously started via startSignatureFlow.
      */

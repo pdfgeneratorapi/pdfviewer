@@ -69,6 +69,7 @@ interface OpenDocumentParams {
 
 interface SignatureFlowParams {
   readonly name: string;
+  readonly signatureId?: string | undefined;
 }
 
 interface PDFViewerApplication {
@@ -94,6 +95,7 @@ interface PDFViewerApplication {
   showSignatureButton(): void;
   hideSignatureButton(): void;
   startSignatureFlow(params: SignatureFlowParams): Promise<void>;
+  setActiveSignatureField(signatureId: string | null): void;
   cancelSignatureFlow(): void;
   getBase64Document(): Promise<string>;
 }
@@ -207,7 +209,27 @@ class PDFViewer {
     }
 
     const pdfjsApp = await this.pdfJsApplication();
-    await pdfjsApp.startSignatureFlow({ name: params.name });
+
+    await pdfjsApp.startSignatureFlow({
+      name: params.name,
+      signatureId: params.signatureId,
+    });
+  };
+
+  /**
+   * Restricts signing to a single signature field, matched by its id.
+   *
+   * @param signatureId - string | null
+   */
+  public setActiveSignatureField = async (
+    signatureId: string | null
+  ): Promise<void> => {
+    if (!this.isIframeLoaded) {
+      throw new Error("PDFViewer error: active signature field can not be set - iframe is not loaded. Call loadUrl or loadBase64 first.");
+    }
+
+    const pdfjsApp = await this.pdfJsApplication();
+    pdfjsApp.setActiveSignatureField(signatureId);
   };
 
   /**

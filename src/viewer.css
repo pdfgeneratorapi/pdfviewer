@@ -1301,6 +1301,10 @@
         color:#2a6ab9;
       }
 
+.annotationLayer .signatureWidgetAnnotation.signatureFieldHidden{
+    display:none;
+  }
+
 .annotationLayer .textWidgetAnnotation input.comb{
     font-family:monospace;
     padding-left:2px;
